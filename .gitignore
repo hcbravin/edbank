@@ -14,3 +14,4 @@ notas
 ssl_error.log
 ssl_access.log
 config/config.php
+config/database.php
