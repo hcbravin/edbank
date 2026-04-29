@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDBank - Patrocinadores</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .company-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            height: 100%;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .company-logo {
+            /* height: 180px; */
+            object-fit: contain;
+            /* padding: 30px; */
+            background: white;
+            width: 100%;
+        }
+
+        .person-item {
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .person-item:hover {
+            background-color: #f8f9fa;
+            border-left-color: #0d6efd;
+            transform: translateX(5px);
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            border-radius: 3px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background: #f8f9fa;
+        }
+
+        .avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .person-name {
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+
+        .person-date {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-handshake me-2"></i>
+                EDBank Patrocinadores
+            </a>
+            <div class="ms-auto">
+                <span id="lastUpdated" class="text-light small"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-primary text-white text-center py-5"
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <h1 class="display-4 fw-bold">
+                <i class="fas fa-heart me-2"></i>
+                Apoiadores do EDBank
+            </h1>
+            <p class="lead">
+                Empresas e pessoas que acreditam no nosso projeto
+            </p>
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-8">
+                    <div class="stats-card">
+                        <div class="row">
+                            <div class="col-6" id="statsCompanies">
+                                <h2 class="display-6 fw-bold mb-0">0</h2>
+                                <p class="mb-0">Empresas</p>
+                            </div>
+                            <div class="col-6" id="statsPeople">
+                                <h2 class="display-6 fw-bold mb-0">0</h2>
+                                <p class="mb-0">Pessoas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container my-5">
+        <!-- Loading State -->
+        <div id="loadingSpinner" class="text-center py-5">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-3 text-muted">Carregando apoiadores...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorAlert" class="alert alert-danger" style="display: none;" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Erro ao carregar apoiadores!</strong>
+            Por favor, tente novamente mais tarde.
+        </div>
+
+        <!-- Content -->
+        <div id="content" style="display: none;">
+
+            <!-- SEÇÃO EMPRESAS -->
+            <div id="companiesSection" style="display: none;">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-building me-2 text-primary"></i>
+                    Empresas Parceiras
+                </h2>
+                <div id="companiesContainer" class="row g-4 mb-5"></div>
+            </div>
+
+            <!-- SEÇÃO PESSOAS -->
+            <div id="peopleSection" style="display: none;">
+                <h2 class="section-title text-center mb-5">
+                    <i class="fas fa-users me-2 text-primary"></i>
+                    Apoiadores Individuais
+                </h2>
+                <div id="peopleContainer" class="row g-3"></div>
+            </div>
+
+            <!-- Se não houver nenhum patrocinador -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-handshake fa-4x text-muted mb-3"></i>
+                <h4>Seja um apoiador!</h4>
+                <p class="text-muted">Apoie o EDBank e faça parte dessa lista</p>
+                <button class="btn btn-primary mt-3" onclick="contactForSponsorship()">
+                    <i class="fas fa-heart me-2"></i>
+                    Quero apoiar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção "Como Apoiar" -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">
+                <i class="fas fa-question-circle me-2"></i>
+                Como apoiar o projeto?
+            </h2>
+            <div class="row justify-content-center">
+                <div class="col-md-5 mb-4">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fas fa-building fa-3x text-primary mb-3"></i>
+                            <h4>Empresas</h4>
+                            <ul class="list-unstyled text-muted">
+                                <li><i class="fas fa-check text-success me-2"></i>Logo com link para seu site</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Destaque na home page</li>
+                            </ul>
+                            <h4 class="text-primary mt-3">
+                                <small style="font-size: 9pt;">A partir de </small>
+                                <br>
+                                R$ 500
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5 mb-4">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                            <h4>Pessoas Físicas</h4>
+                            <ul class="list-unstyled text-muted">
+                                <li><i class="fas fa-check text-success me-2"></i>Nome na página de apoiadores</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Reconhecimento público</li>
+                            </ul>
+                            <h4 class="text-primary mt-3 align-self-end">
+                                <small style="font-size: 9pt;">A partir de </small>
+                                <br>
+                                R$ 10
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-primary btn-lg" onclick="contactForSponsorship()">
+                    <i class="fas fa-heart me-2"></i>
+                    Quero ser apoiador
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-0 text-muted">
+                © 2026 EDBank - Todos os direitos reservados
+            </p>
+            <small class="text-muted">
+                Última atualização: <span id="footerLastUpdated">--/--/----</span>
+            </small>
+        </div>
+    </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // URL do seu endpoint JSON
+    const API_URL = "./api/sponsors.json";
+    
+    let sponsorsData = {
+        companies: [],
+        people: []
+    };
+
+    // Função principal para carregar patrocinadores
+    async function loadSponsors() {
+        const loading = document.getElementById('loadingSpinner');
+        const errorAlert = document.getElementById('errorAlert');
+        const content = document.getElementById('content');
+        
+        try {
+            loading.style.display = 'block';
+            errorAlert.style.display = 'none';
+            content.style.display = 'none';
+            
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Verificar se existe a estrutura com sponsors[0].company e sponsors[0].person
+            if (data.sponsors && Array.isArray(data.sponsors) && data.sponsors.length > 0) {
+                const firstSponsor = data.sponsors[0];
+                
+                // Pegar empresas (se existir o array 'company')
+                if (firstSponsor.company && Array.isArray(firstSponsor.company)) {
+                    sponsorsData.companies = firstSponsor.company;
+                } else {
+                    sponsorsData.companies = [];
+                }
+                
+                // Pegar pessoas (se existir o array 'person')
+                if (firstSponsor.person && Array.isArray(firstSponsor.person)) {
+                    sponsorsData.people = firstSponsor.person;
+                } else {
+                    sponsorsData.people = [];
+                }
+                
+                // Atualizar data
+                if (data.lastUpdated) {
+                    const date = new Date(data.lastUpdated);
+                    const formattedDate = date.toLocaleDateString('pt-BR') + ' às ' + date.toLocaleTimeString('pt-BR');
+                    document.getElementById('footerLastUpdated').textContent = formattedDate;
+                    document.getElementById('lastUpdated').textContent = 'Atualizado em: ' + formattedDate;
+                }
+                
+                // Atualizar estatísticas
+                updateStats();
+                
+                // Renderizar conteúdo (COM ORDEM INVERTIDA)
+                renderCompanies();
+                renderPeople();
+                
+                // Mostrar/esconder seções
+                const companiesSection = document.getElementById('companiesSection');
+                const peopleSection = document.getElementById('peopleSection');
+                const emptyState = document.getElementById('emptyState');
+                
+                if (companiesSection) companiesSection.style.display = sponsorsData.companies.length > 0 ? 'block' : 'none';
+                if (peopleSection) peopleSection.style.display = sponsorsData.people.length > 0 ? 'block' : 'none';
+                
+                if (sponsorsData.companies.length === 0 && sponsorsData.people.length === 0) {
+                    if (emptyState) emptyState.style.display = 'block';
+                } else {
+                    if (emptyState) emptyState.style.display = 'none';
+                }
+                
+                loading.style.display = 'none';
+                content.style.display = 'block';
+                
+            } else {
+                throw new Error('Estrutura do JSON inválida');
+            }
+            
+        } catch (error) {
+            console.error('Erro:', error);
+            loading.style.display = 'none';
+            errorAlert.style.display = 'block';
+            errorAlert.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Erro ao carregar apoiadores!</strong><br>
+                ${error.message}<br>
+                <small>Verifique se o arquivo sponsors.json existe e está acessível.</small>
+            `;
+        }
+    }
+    
+    // Renderizar empresas (MAIS RECENTES PRIMEIRO)
+    function renderCompanies() {
+        const container = document.getElementById('companiesContainer');
+        
+        if (!container) return;
+        
+        if (sponsorsData.companies.length === 0) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Nenhuma empresa parceira ainda. Seja a primeira!
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        // INVERTER A ORDEM: a última adicionada (mais recente) vira primeira
+        const reversedCompanies = [...sponsorsData.companies].reverse();
+        
+        container.innerHTML = reversedCompanies.map(company => `
+            <div class="col-md-6 col-lg-4">
+                <div class="card company-card" onclick="openLink('${company.website || '#'}')">
+                    <img src="${company.imageUrl}" 
+                         alt="${company.name}" 
+                         class="company-logo"
+                         onerror="this.src='https://via.placeholder.com/300x180?text=Logo'">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">${escapeHtml(company.name)}</h5>
+                        ${company.website ? `
+                            <span class="text-primary small">
+                                <i class="fas fa-external-link-alt me-1"></i>
+                                Visitar site
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Renderizar pessoas (MAIS RECENTES PRIMEIRO)
+    function renderPeople() {
+        const container = document.getElementById('peopleContainer');
+        
+        if (!container) return;
+        
+        if (sponsorsData.people.length === 0) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Nenhum apoiador individual ainda. Faça parte você também!
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        // INVERTER A ORDEM: o último adicionado (mais recente) vira primeiro
+        const reversedPeople = [...sponsorsData.people].reverse();
+        
+        container.innerHTML = reversedPeople.map(person => {
+            let formattedDate = '';
+            if (person.date) {
+                const date = new Date(person.date);
+                formattedDate = date.toLocaleDateString('pt-BR');
+            }
+            
+            return `
+                <div class="col-md-6 col-lg-4">
+                    <div class="person-item p-3 rounded">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-placeholder flex-shrink-0">
+                                ${escapeHtml(person.name.charAt(0).toUpperCase())}
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="person-name mb-0">${escapeHtml(person.name)}</h6>
+                                ${formattedDate ? `<small class="person-date">Apoiador desde ${formattedDate}</small>` : ''}
+                            </div>
+                            <div class="ms-auto">
+                                <i class="fas fa-heart text-danger"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // Função para escapar HTML (segurança)
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Atualizar estatísticas
+    function updateStats() {
+        const statsCompanies = document.getElementById('statsCompanies');
+        const statsPeople = document.getElementById('statsPeople');
+        
+        if (statsCompanies) {
+            const h2 = statsCompanies.querySelector('.display-6');
+            if (h2) h2.textContent = sponsorsData.companies.length;
+        }
+        if (statsPeople) {
+            const h2 = statsPeople.querySelector('.display-6');
+            if (h2) h2.textContent = sponsorsData.people.length;
+        }
+    }
+    
+    // Abrir link
+    function openLink(url) {
+        if (url && url !== '#') {
+            window.open(url, '_blank');
+        }
+    }
+    
+    // Contato para patrocínio
+    function contactForSponsorship() {
+        window.location.href = 'mailto:contato@edbank.com.br?subject=Quero apoiar o EDBank';
+    }
+    
+    // Inicializar quando a página carregar
+    document.addEventListener('DOMContentLoaded', loadSponsors);
+</script>
+</body>
+
+</html>

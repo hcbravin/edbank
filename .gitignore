@@ -1,0 +1,16 @@
+./*.log
+./error.log.php
+./error.log.bak
+./*.lock
+./access.log
+./error.log
+error.log.bak
+error.log.php
+access.log
+dbError.log
+error.log
+vendor/
+notas
+ssl_error.log
+ssl_access.log
+config/config.php

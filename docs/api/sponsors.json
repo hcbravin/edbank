@@ -1,0 +1,36 @@
+{
+  "url": "https://hcbravin.github.io/edbank/api/sponsors.json",
+  "sponsors": [
+    {
+      "company": [
+        {
+          "name": "Supermercado Superlar",
+          "imageUrl": "https://hcbravin.github.io/edbank/api/pub01.jpeg",
+          "website": "https://empresaalpha.com"
+        },
+        {
+          "name": "Centro Automotivo Confia",
+          "imageUrl": "https://hcbravin.github.io/edbank/api/pub02.jpeg",
+          "website": "https://joaodev.com.br"
+        },
+        {
+          "name": "Cafeteria Sabor de Iúna",
+          "imageUrl": "https://hcbravin.github.io/edbank/api/pub03.jpeg",
+          "website": "https://joaodev.com.br"
+        },
+        {
+          "name": "Sicoob",
+          "imageUrl": "https://hcbravin.github.io/edbank/api/pub04.jpeg",
+          "website": "https://joaodev.com.br"
+        }
+      ],
+      "person": [
+        {
+          "name": "Henrique Casagrande Bravin",
+          "date": "2026-04-28T10:00:00Z"
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2026-04-28T10:00:00Z"
+}
