@@ -108,6 +108,7 @@
 
             // Exibe os itens adqiridos pela pessoa no shopping
             if($URI[4] == 'shop'){
+                $TokenShop = Token('get');
                 $Shop = $ClassConta -> getMyShopItens();
                 require_once Views . '/gerencia/conta_shop.php';
             }
@@ -146,6 +147,10 @@
 
     if($URI[2]=='ranking'){
 
+        if(!$URI[3]){
+            require_once Views.'/gerencia/ranking.php';
+        }
+
         // Ranking de Transacoes
         if($URI[3]=='transacoes'){
             $Chart = $Agencia -> Chart('transacoes');
@@ -168,6 +173,10 @@
 
     if($URI[2]=='depositar'){ // Depositar dinheiro em todas as conta
         require_once Views.'/gerencia/conta_depositar.php';
+    goto Fim;}
+
+    if($URI[2]=='fechar'){
+        require_once Views . '/gerencia/fechar.php';
     goto Fim;}
 
 

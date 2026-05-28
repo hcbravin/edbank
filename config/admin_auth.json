@@ -1,0 +1,9 @@
+{
+  "admins": [
+    "tomahawk5x@gmail.com",
+    "henrique.bravin@educador.edu.es.gov.br"
+  ],
+  "options": {
+    "allow_any_authenticated_user": false
+  }
+}

@@ -1,4 +1,10 @@
-<?php if (!Logado()) { goto Fim; } $P = $_POST; $countErro = 0;
+<?php 
+// =========================================================================
+// Verificações de segurança
+if (!Logado()) { goto Fim; }
+if (!Token(@$_POST['form_token'])) { Alert('Token de Segurança expirado!'); goto Fim; }
+$P = $_POST; $countErro = 0;
+// =========================================================================
 
 // Atualizações referente a Agências
 if ($URI[1] == 'agencia') {
@@ -11,6 +17,15 @@ if ($URI[1] == 'agencia') {
         }
 
         shdr('dashboard');
+    goto Status;}
+
+    if($URI[2]=='fechar'){
+        $Agencia = new Agencia();
+        $Agencia -> id = $URI[3];
+        if(!$Agencia -> FecharAgencia()){
+            $countErro++;
+        }
+        shdr("gerencia/{$Agencia->id}");
     goto Status;}
 
     // Carrega a agência
@@ -251,6 +266,33 @@ if ($URI[1]=='conta'){
         }
 
         shdr("gerencia/{$Agencia->id}/contas");
+    }
+
+    // Oprações de shopping
+    if($URI[2]=='shop'){
+
+        // Remove item comprado
+        if($URI[3] == 'remove'){
+            // /upg/conta/shop/remove/{agencia}/{cliente}/{item}/{quantidade}/{token}
+
+            // Verifica se o id da agência pertence ao usuário executor
+            if(!array_key_exists($URI[4], $MS['gerente'])){
+                $countErro++;
+                Alert('Agência não encontrada.');
+                shdr('gerencia/'.$URI[4]);
+                goto Status;
+            }
+
+            $Conta = new Conta();
+            $Conta -> contaID = $URI[5];
+            $Conta -> agenciaID = $URI[4];
+            
+            if(!$Conta -> setMyShopItem($URI[6], ($URI[7] == 0 ? $URI[7] : $URI[7]))){
+                $countErro++;
+            }
+
+            shdr("gerencia/{$URI[4]}/contas/{$URI[5]}/shop");
+        goto Status;}
     }
 }
 

@@ -18,6 +18,7 @@
                 <?php if ($MS['gerente'][$URI[1]]['ag_dias'] < 30) { ?>
                     <input type="hidden" name="agencia" value="<?= $URI[1]; ?>">
                     <span class="badge-alt text-bg-warning align-self-center mpoint" onclick="$('#AgenciaTimeSubmit').submit();"><i class="bi bi-plus-lg"></i> 30 Dias</span>
+                    <?= Token(); ?>
                 <?php } ?>
             </div>
         </form>
@@ -30,18 +31,19 @@
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/contas"><i class="bi bi-people me-1"></i> Contas</a></li>
+                <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/ranking"><i class="bi bi-bar-chart-line-fill me-1"></i> Rankings</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/pendencias"><i class="bi bi-clock me-1"></i> Pendências</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/configuracoes"><i class="bi bi-gear me-1"></i> Configurações</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/ranking/transacoes"><i class="bi bi-currency-dollar me-1"></i> Ranking Transações</a></li>
-                <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/ranking/shop"><i class="bi bi-cart me-1"></i> Ranking Shopping</a></li>
+                
                 <li>
                     <hr class="dropdown-divider">
                 </li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/ciclo"><i class="bi bi-clock-history me-1"></i> Ciclo Manual</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/depositar"><i class="bi bi-send-plus-fill me-1"></i> Depositar</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/fechar"><i class="bi bi-building-fill-lock me-1"></i> Fehcar Agência</a></li>
             </ul>
         </div>
     </div>
@@ -60,8 +62,11 @@
                 case 'contas': print '<i class="bi bi-people me-1"></i> Contas'; break;
                 case 'ranking': print '<i class="bi bi-bar-chart-fill me-1"></i> Ranking'; 
                     switch($URI[3]){
-                        case 'transacoes': print '<i class="bi bi-currency-dollar ms-2 me-1"></i> Transações'; break;
+                        case 'transacoes': print '<i class="bi bi-graph-up-arrow ms-2 me-1"></i> Transações'; break;
                         case 'shop': print '<i class="bi bi-cart ms-2 me-1"></i> Shop'; break;
+                        case 'investimentos': print '<i class="bi bi-cash-coin ms-2 me-1"></i> Investimentos'; break;
+                        case 'emprestimos': print '<i class="bi bi-suitcase-lg ms-2 me-1"></i> Empréstimos'; break;
+                        case 'cartao': print '<i class="bi bi-credit-card-2-front-fill ms-2 me-1"></i> Cartão'; break;
                     }
                     break;
                 case 'pendencias': print '<i class="bi bi-clock me-1"></i> Pendências'; break;

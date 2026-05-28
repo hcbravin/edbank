@@ -1,21 +1,33 @@
 <div class="row justify-content-center">
     <div class="col-12 col-sm-10 col-md-8">
 
-        <div class="infomain bd-1 bd-primary mb-2 shadow-md">
-            <i class="bi bi-trophy-fill text-warning me-1"></i> Ranking de compras no Shopping
+        <div class="infomain bd-1 bd-primary mb-2 shadow-md d-flex justify-content-between">
+            <span class="align-self-center"><i class="bi bi-trophy-fill text-warning me-1"></i> Ranking de compras no Shopping</span>
         </div>
-        
-        <div class="list-group list-group-numbered">
-            <?php foreach ($Chart['contas'] as $User) { ?>
-                <a href="/gerencia/<?= $URI[1]; ?>/contas/<?= $User['cts_conta']; ?>/shop" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
-                    <div class="fw-bold w-100 ms-2"><?= $User['user_nome']; ?></div>
-                    <div class="d-flex align-self-center">
-                        <span class="badge bg-primary rounded ms-1"><?= $User['total_stock']; ?></span>
-                        <span class="badge bg-success rounded ms-1">R$ <?= number_format($User['valor_total'], 2, ',', '.'); ?></span>
-                    </div>
-                </a>
-            <?php } ?>
-        </div>
+
+        <table class="table table-sm table-striped tableReorder" id="GerenciaRankingShopTable">
+            <thead>
+                <tr class="text-center">
+                    <th class="d-none d-sm-table-cell">#</th>
+                    <th class="text-start ps-2">Nome</th>
+                    <th>Itens</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($Chart['contas'] as $User) { ?>
+                <tr>
+                    <td class="d-none d-sm-table-cell text-center">#</td>
+                    <td class="border-start ps-2"><?= $User['user_nome']; ?></td>
+                    <td class="border-start text-center"><?= $User['total_stock']; ?></td>
+                    <td class="border-start text-center d-flex justify-content-between">
+                        <span>R$</span>
+                        <span><?= number_format($User['valor_total'], 2, ',', '.'); ?></span>
+                    </td>
+                </tr>
+                <?php } ?>
+            </tbody>
+        </table>
 
     </div>
 </div>

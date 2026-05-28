@@ -1,8 +1,8 @@
 <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-8 mb-2">
         <div class="d-flex justify-content-between">
-            <button class="btn btn-sm btn-danger align-self-center" data-eb-rmv="upg/conta/cartao/cancelar/<?= $URI[1]; ?>/<?= $URI[3]; ?>" type="button"><i class="bi bi-ban align-self-center me-1"></i> Cancelar Cartão</button>
-            <a href="/conta/<?= $URI[1]; ?>/cartoes" class="btn btn-warning btn-sm w-px-150"><i class="bi bi-credit-card-2-front-fill me-1"></i> Todos os Cartões</a>
+            <button class="btn btn-sm btn-danger align-self-center" data-eb-rmv="upg/conta/cartao/cancelar/<?= $URI[1]; ?>/<?= $URI[3]; ?>/<?= Token('get'); ?>" type="button"><i class="bi bi-ban align-self-center me-1"></i> Cancelar Cartão</button>
+            <a href="/conta/<?= $URI[1]; ?>/cartoes/" class="btn btn-warning btn-sm w-px-150"><i class="bi bi-credit-card-2-front-fill me-1"></i> Todos os Cartões</a>
         </div>
 
 

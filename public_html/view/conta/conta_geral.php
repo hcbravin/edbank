@@ -84,7 +84,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5>Meus cartões</h5>
             <div>
-                <a href="/conta/<?= $URI[1]; ?>/cartoes/novo" class="btn btn-warning btn-sm <?= (count($fConta['cartoes']) >= 2) ? 'd-none disabled' : ''; ?>"><i class="bi bi-credit-card me-1"></i> Solicitar<span class="d-none d-sm-inline-block"> Cartão</span></a>
+                <a href="/conta/<?= $URI[1]; ?>/cartoes/novo" class="btn btn-warning btn-sm <?= (count($fConta['cartoes']) >= 2) ? 'd-none disabled' : ''; ?>"><i class="bi bi-credit-card me-1"></i> Solicitar <span class="d-none d-sm-inline-block"> Cartão</span></a>
                 <a href="/conta/<?= $URI[1]; ?>/cartoes" class="btn btn-sm btn-outline-primary w-px-120"><i class="bi bi-credit-card me-1"></i> Ver todos</a>
             </div>
         </div>

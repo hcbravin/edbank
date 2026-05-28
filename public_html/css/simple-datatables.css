@@ -1,0 +1,399 @@
+/* ============================================
+   Simple-DataTables + Bootstrap 5 Integration
+   ============================================ */
+
+/* Wrapper - usa card do Bootstrap */
+.datatable-wrapper {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: var(--bs-card-bg, #fff);
+    border-radius: var(--bs-border-radius);
+}
+
+.datatable-wrapper.no-header .datatable-container {
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.datatable-wrapper.no-footer .datatable-container {
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* Top e Bottom - usa padding do Bootstrap */
+.datatable-top,
+.datatable-bottom {
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background-color: var(--bs-light-bg-subtle, #f8f9fa);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.datatable-bottom {
+    border-top: 1px solid var(--bs-border-color);
+    border-bottom: none;
+}
+
+/* Seletor de "itens por página" - estilo form-select-sm */
+.datatable-dropdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.datatable-dropdown label {
+    margin-bottom: 0;
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+}
+
+.datatable-selector {
+    display: inline-block;
+    width: auto;
+    padding: 0.25rem 2rem 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm, 0.25rem);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+}
+
+.datatable-selector:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Input de busca - estilo form-control-sm e alinhado à direita */
+.datatable-search {
+    display: inline-flex;
+    margin-left: auto;
+}
+
+.datatable-search:first-child {
+    margin-left: 0;
+}
+
+.datatable-input {
+    display: block;
+    width: auto;
+    min-width: 200px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm, 0.25rem);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.datatable-input:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Informações - texto Bootstrap */
+.datatable-info {
+    margin: 0;
+    padding: 0.25rem 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   PAGINAÇÃO - Estilo Bootstrap (sm)
+   ============================================ */
+
+.datatable-pagination ul {
+    margin: 0;
+    margin-left: auto;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.datatable-pagination li {
+    list-style: none;
+    display: inline-block;
+}
+
+.datatable-pagination li.datatable-hidden {
+    visibility: hidden;
+    display: none;
+}
+
+.datatable-pagination a,
+.datatable-pagination button {
+    position: relative;
+    display: block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--bs-link-color, #0d6efd);
+    text-decoration: none;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm, 0.25rem);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: normal;
+}
+
+.datatable-pagination a:hover,
+.datatable-pagination button:hover {
+    z-index: 2;
+    color: var(--bs-link-hover-color, #0a58ca);
+    background-color: var(--bs-hover-bg, #e9ecef);
+    border-color: var(--bs-border-color);
+}
+
+/* Item ativo */
+.datatable-pagination .datatable-active a,
+.datatable-pagination .datatable-active a:focus,
+.datatable-pagination .datatable-active a:hover,
+.datatable-pagination .datatable-active button,
+.datatable-pagination .datatable-active button:focus,
+.datatable-pagination .datatable-active button:hover {
+    z-index: 3;
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    cursor: default;
+    padding: 0.25rem 0.75rem;
+}
+
+/* Desabilitado e ellipsis */
+.datatable-pagination .datatable-ellipsis a,
+.datatable-pagination .datatable-disabled a,
+.datatable-pagination .datatable-disabled a:focus,
+.datatable-pagination .datatable-disabled a:hover,
+.datatable-pagination .datatable-ellipsis button,
+.datatable-pagination .datatable-disabled button,
+.datatable-pagination .datatable-disabled button:focus,
+.datatable-pagination .datatable-disabled button:hover {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.4;
+}
+
+.datatable-pagination .datatable-disabled a,
+.datatable-pagination .datatable-disabled a:focus,
+.datatable-pagination .datatable-disabled a:hover,
+.datatable-pagination .datatable-disabled button,
+.datatable-pagination .datatable-disabled button:focus,
+.datatable-pagination .datatable-disabled button:hover {
+    cursor: not-allowed;
+}
+
+/* ============================================
+   TABELA - Estilo Bootstrap
+   ============================================ */
+
+.datatable-table {
+    width: 100%;
+    margin-bottom: 0;
+    color: var(--bs-table-color);
+    vertical-align: top;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.datatable-table > thead > tr > th,
+.datatable-table > tbody > tr > td,
+.datatable-table > tbody > tr > th,
+.datatable-table > tfoot > tr > td,
+.datatable-table > tfoot > tr > th {
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.datatable-table > thead > tr > th {
+    vertical-align: bottom;
+    border-bottom: 2px solid var(--bs-border-color);
+    background-color: var(--bs-light-bg-subtle, #f8f9fa);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.datatable-table > tfoot > tr > th,
+.datatable-table > tfoot > tr > td {
+    border-top: 2px solid var(--bs-border-color);
+    background-color: var(--bs-light-bg-subtle, #f8f9fa);
+}
+
+.datatable-table th {
+    text-align: left;
+    position: relative;
+}
+
+.datatable-table th a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Botões dentro do cabeçalho */
+.datatable-table th button,
+.datatable-pagination-list button {
+    color: inherit;
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+    text-align: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    width: 100%;
+    padding: 0.25rem 0.75rem;
+    margin: 0;
+}
+
+/* ============================================
+   SORTER e FILTER - Ícones
+   ============================================ */
+
+.datatable-sorter,
+.datatable-filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    gap: 0.25rem;
+}
+
+.datatable-sorter::before,
+.datatable-sorter::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    opacity: 0.3;
+}
+
+.datatable-sorter::before {
+    border-bottom: 4px solid currentColor;
+    margin-bottom: 2px;
+}
+
+.datatable-sorter::after {
+    border-top: 4px solid currentColor;
+    margin-top: 2px;
+}
+
+.datatable-ascending .datatable-sorter::before,
+.datatable-descending .datatable-sorter::after {
+    opacity: 1;
+}
+
+/* Filtro */
+.datatable-filter::before {
+    content: "🔽";
+    font-size: 0.7rem;
+    opacity: 0.5;
+}
+
+.datatable-filter-active .datatable-filter::before {
+    opacity: 1;
+    color: #0d6efd;
+}
+
+/* ============================================
+   ESTADOS ESPECIAIS
+   ============================================ */
+
+.datatable-empty {
+    text-align: center;
+    padding: 2rem !important;
+    color: var(--bs-secondary-color);
+}
+
+/* Cursor row */
+.datatable-cursor > td:first-child {
+    border-left: 3px solid #0d6efd !important;
+}
+
+/* Focus na tabela */
+.datatable-table:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: -1px;
+}
+
+/* Striped rows (opcional, combina com table-striped) */
+.datatable-table.datatable-table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: var(--bs-table-striped-bg);
+    color: var(--bs-table-striped-color);
+}
+
+/* Hover rows */
+.datatable-table.datatable-table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: var(--bs-table-hover-bg);
+    color: var(--bs-table-hover-color);
+}
+
+/* ============================================
+   UTILITÁRIOS
+   ============================================ */
+
+.datatable-top::after,
+.datatable-bottom::after {
+    clear: both;
+    content: " ";
+    display: table;
+}
+
+/* Responsivo para mobile */
+@media (max-width: 768px) {
+    .datatable-top,
+    .datatable-bottom {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .datatable-top > div,
+    .datatable-bottom > div,
+    .datatable-top > nav,
+    .datatable-bottom > nav {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .datatable-dropdown,
+    .datatable-search {
+        width: 100%;
+    }
+    
+    .datatable-dropdown select,
+    .datatable-search input {
+        width: 100%;
+    }
+    
+    .datatable-pagination ul {
+        justify-content: center;
+        margin-left: auto !important;
+    }
+    
+    /* No mobile, a busca fica centralizada */
+    .datatable-search {
+        margin-left: 0;
+    }
+}

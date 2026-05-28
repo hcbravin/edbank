@@ -98,7 +98,10 @@ require_once __DIR__ . '/src/AppLoading.php';
 
                 <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
                     <?php if (Logado()) { ?>
-                        <li class="nav-item"><a class="nav-link" href="/logout"><span class="badge-alt rounded-1 py-2 text-bg-danger"><i class="bi bi-door-closed-fill"></i> <span class="ft-10 ms-1">Sair</span></span></a></li>
+                        <?php if(isset($MS['rootAcess']) AND $MS['rootAcess']){ ?>
+                        <li class="nav-item"><a class="nav-link" href="/admin/usuarios/reset"><span class="btn btn-sm btn-light py-1 ft-10"><i class="bi bi-arrow-counterclockwise"></i> <span class="ft-10 ms-1">Reset</span></span></a></li>
+                        <?php } ?>
+                        <li class="nav-item"><a class="nav-link" href="/logout"><span class="btn btn-sm btn-danger ft-10 py-1"><i class="bi bi-door-closed-fill"></i> <span class="ft-10 ms-1">Sair</span></span></a></li>
 
                     <?php } else { ?>
 

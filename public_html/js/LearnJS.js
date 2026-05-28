@@ -5,15 +5,15 @@ $(function () {
     }
 
     // Share
-    $('.ShareText').click(function(){
+    $('.ShareText').click(function () {
         const texto = $($(this).attr('data-eb-target')).val();
         const titulo = $(this).attr('data-eb-title');
-        if(navigator.share){
+        if (navigator.share) {
             navigator.share({
                 title: titulo,
                 text: texto
             });
-        }else{
+        } else {
             navigator.clipboard.writeText(texto);
             $(this).html('<i class="bi bi-clipboard me-1"></i> Copiado').toggleClass('btn-warning btn-success');
         }
@@ -145,7 +145,7 @@ $(function () {
         }
     })
 
-    
+
 
     // Receber
     $('#pixGerarQrCodeButton').on('click', function () {
@@ -189,29 +189,29 @@ $(function () {
     });
 
     // Enviar
-    $('#pixEnviarCopiaeCola').off('click').click(function(){ // Altera o botão para mudar entre inserir chave e copia e cola
+    $('#pixEnviarCopiaeCola').off('click').click(function () { // Altera o botão para mudar entre inserir chave e copia e cola
         $('#pixEnviarModalCopy, #pixEnviarModalMain').toggleClass('d-none');
-        if($('#pixEnviarModalCopy').is(':hidden')){
+        if ($('#pixEnviarModalCopy').is(':hidden')) {
             $(this).html('<i class="bi bi-clipboard me-1"></i> Copiar e Colar');
-        }else{
+        } else {
             $(this).html('<i class="bi bi-key me-1"></i> Inserir Chave');
         }
     });
-    $('#pixEnviarCopyInsert').on('input', function(){ // Executa as ações de busca do destinatário ao digitar os dados do PIX
+    $('#pixEnviarCopyInsert').on('input', function () { // Executa as ações de busca do destinatário ao digitar os dados do PIX
         // Campos referente ao copia e cola
         const chaveInsert = $('#pixEnviarCopyInsertChave');
-        const destinatarioInsert =  $('#pixEnviarCopyInsertDestinatario');
-        const destinatarioNomeInsert =  $('#pixEnviarDestinatarioNome');
+        const destinatarioInsert = $('#pixEnviarCopyInsertDestinatario');
+        const destinatarioNomeInsert = $('#pixEnviarDestinatarioNome');
         const valorInsert = $('#pixEnviarCopyInsertValor');
         const payload = $(this).val();
         // Campos referente ao inserir chave
         const pixEnviarChave = $('#pixEnviarChave');
         const pixEnviarValor = $('#pixEnviarValor');
 
-        if(payload.includes('BR.GOV.BCB.PIX')){ // Verifica se é um payload valido
+        if (payload.includes('BR.GOV.BCB.PIX')) { // Verifica se é um payload valido
             $.post('/api.php/conta/pix/colar', { payload }, function (resp) {
                 const obj = (typeof resp === 'string') ? JSON.parse(resp) : resp; // Verifica se e uma string ou um objeto
-                if(obj.status == 'success'){
+                if (obj.status == 'success') {
                     // Define os valores dos campos em caso de successo.
                     destinatarioInsert.text(obj.nome);
                     valorInsert.text(obj.valor.toString().replace('.', ','));
@@ -219,8 +219,8 @@ $(function () {
                     pixEnviarValor.val(obj.valor);
                     pixEnviarChave.val(obj.chave);
                     destinatarioNomeInsert.val(obj.nome);
-                    
-                }else{
+
+                } else {
                     // Zera os valores dos campos e informa o erro passado pelo api.
                     alert('Dados do pix inválidos');
                     destinatarioInsert.text('');
@@ -230,17 +230,17 @@ $(function () {
                     pixEnviarChave.val('');
                 }
             });
-        }else{
+        } else {
             alert('Os dados do pix não são válidos.')
         }
     })
-    $('#pixEnviarChave').on('input', function(){
+    $('#pixEnviarChave').on('input', function () {
         const chave = $(this).val();
         // console.log(chave);
         $.post('/api.php/conta/pix/buscarChave', { chave }, function (resp) {
             const obj = (typeof resp === 'string') ? JSON.parse(resp) : resp; // Verifica se e uma string ou um objeto
             // console.log(obj);
-            if(obj.status == 'success'){
+            if (obj.status == 'success') {
                 $('#pixEnviarDestinatario').text(obj.nome);
                 $('#pixEnviarDestinatarioNome').val(obj.nome);
             }
@@ -275,7 +275,7 @@ $(function () {
                     .val(qrCodeMessage)
                     .trigger('input');
 
-                setTimeout(function(){ $('#pixEnviarCopiaeCola').trigger('click'); }, 100);
+                setTimeout(function () { $('#pixEnviarCopiaeCola').trigger('click'); }, 100);
                 qrCodeReader.stop().then(() => {
                     $('#pixQRCodeModal').modal('hide');
                 });
@@ -293,13 +293,13 @@ $(function () {
         }
     });
 
-    $('#pixEnviarValorFormaAlt').change(function(){ // Altera a forma de escolha do metodo de pagamento do pix
+    $('#pixEnviarValorFormaAlt').change(function () { // Altera a forma de escolha do metodo de pagamento do pix
         $('#pixEnviarValorForma').val($(this).val());
     })
 
 
     // Notificacoes de Contas
-    $('.NotificacaoItem, #NotificacaoTodos').click(function(){
+    $('.NotificacaoItem, #NotificacaoTodos').click(function () {
         const modal = $('#notificacoesContaModal');
         const button = $('#notificacoesContaButton');
         const id = $(this).data('eb-notification');
@@ -313,33 +313,33 @@ $(function () {
             console.log(resp);
 
             const obj = (typeof resp === 'string') ? JSON.parse(resp) : resp; // Verifica se e uma string ou um objeto
-            if(obj.status == 'success'){
+            if (obj.status == 'success') {
 
-                if(isNum){
+                if (isNum) {
                     item.find('span').toggleClass('bi-envelope-fill bi-envelope-open');
                     button.find('span.badge').text(total - 1);
 
-                }else{
+                } else {
                     button.find('span.badge').text(0);
                     button.find('span.badge').addClass('d-none');
                     modal.find('.NotificacaoItem').find('span.bi-envelope-fill').removeClass('bi-envelope-fill').addClass('bi-envelope-open');
                     modal.modal('hide');
                 }
-                
+
             }
         }, 'json');
     });
 
     // Cartões
-    $('.contaCardBox').click(function(){ // Redireciona para a tela de detalhes do cartão
+    $('.contaCardBox').click(function () { // Redireciona para a tela de detalhes do cartão
         window.location = '/conta/' + $("#ContaMeuID").data('eb-conta') + '/cartoes/' + $(this).data('eb-cartao') + '/faturas';
     })
-    $('.cartoesFaturaPagar').click(function(){ // Abre o modal de pagar fatura
+    $('.cartoesFaturaPagar').click(function () { // Abre o modal de pagar fatura
         const id = $(this).data('eb-id');
-        if(!isNumeric(id)){
+        if (!isNumeric(id)) {
             alert('Cartão Inválido!')
-        
-        }else{
+
+        } else {
             const vencimento = $(this).data('eb-vencimento');
             const valor = $(this).data('eb-fatura');
             const color = $(this).data('eb-color');
@@ -360,12 +360,12 @@ $(function () {
 
 
     /* Investimentos */
-    $('.ebInvModal').click(function(){
+    $('.ebInvModal').click(function () {
         const modal = $('#invModalCofrinho');
         const color = $(this).data('eb-color');
         const tempo = $(this).data('eb-tempo');
-        const tipo  = $(this).data('eb-tipo');
-        modal.find('.modal-header').attr('class','modal-header').addClass('text-bg-' + color);
+        const tipo = $(this).data('eb-tipo');
+        modal.find('.modal-header').attr('class', 'modal-header').addClass('text-bg-' + color);
         modal.find('.modal-title').html($(this).html());
         modal.find('#invModalTempoDiv').addClass('collapse').removeClass((tempo == 1 ? '' : 'collapse'));
         modal.find('#invModalTempoDiv input').prop('disabled', (tempo == 1 ? true : false)).attr('min', tempo);
@@ -374,39 +374,39 @@ $(function () {
     });
 
     /* Pagamento de contas */
-    $('input.pagarContaCheckbox').change(function() {
+    $('input.pagarContaCheckbox').change(function () {
         const saldo = parseFloat($('#pagarContaForm').data('eb-saldo'));
         const pagarForma = $('#pagarContaForma');
         let soma = 0;
-        $('input.pagarContaCheckbox').each(function() {
+        $('input.pagarContaCheckbox').each(function () {
             if ($(this).is(':checked')) {
                 soma += parseFloat($(this).val());
             }
         });
         $('#pagarContaSoma').text(soma.toFixed(2).replace('.', ','));
         $('#pagarContaSomaColor').removeClass('text-primary text-danger').addClass(soma > saldo ? 'text-danger' : 'text-primary');
-        pagarForma.find('option').each(function() {
+        pagarForma.find('option').each(function () {
             let saldoOption = parseFloat($(this).data('eb-saldo'));
             $(this).prop("disabled", (saldoOption < soma ? true : false));
         });
         pagarForma.val(
-            pagarForma.find('option[value="'+pagarForma.val()+'"]:disabled').length ? null : pagarForma.val()
+            pagarForma.find('option[value="' + pagarForma.val() + '"]:disabled').length ? null : pagarForma.val()
         )
     });
-    $('#pagarContaForma').change(function(){
+    $('#pagarContaForma').change(function () {
         const val = $(this).val();
         const saldoInfo = $('span.pagarContaInfoSaldo');
         const cartaoInfo = $('span.pagarContaInfoCartao');
 
         $('input.pagarContaCheckbox').trigger('change');
 
-        if(val == 0){
+        if (val == 0) {
             saldoInfo.removeClass('d-none');
             cartaoInfo.addClass('d-none');
             return;
         }
 
-        if(val > 1){
+        if (val > 1) {
             saldoInfo.addClass('d-none');
             cartaoInfo.removeClass('d-none');
             return;
@@ -417,15 +417,16 @@ $(function () {
     })
 
     /* Botão de copia do modal de configuração */
-    $('input.ModalConfigCopyItem').change(function(){
+    $('input.ModalConfigCopyItem').change(function () {
         $('#ModalConfigCopySubmit').prop('disabled', ($('input.ModalConfigCopyItem:checked').length) ? false : true);
     });
 
     /* Componente de criação de itens do shopping  */ 
-    $('#shopItemSubmit').click(function(){
+    $('button#shopItemSubmit').click(function(){
+        
         const shopItemID = UniqID();
         var shopItemBox = $('#shopItemModel').html().replace('{id}', shopItemID);
-        var quantidade = parseInt($('#shopItemQuantidade').val()); quantidade = (quantidade > 1) ? quantidade :  Math.round(Math.random(50)*1000);
+        var quantidade = parseInt($('#shopItemQuantidade').val()); quantidade = (quantidade < 0 || isNaN(quantidade)) ? Math.round(Math.random(50)*1000) : quantidade;
         // Item que se tornará json
         var shopItem = {
             "title": $('#shopItemTitle').val(),
@@ -483,16 +484,23 @@ $(function () {
         $('#shopItems').append(shopItemBox);
         $(document).find('input[name="shop['+shopItemID+']"]', '#shopItems').val(JSON.stringify(shopItem));
 
+        // Controle de edição do item
+        let EditItemID = $(this).attr('data-eb-target');
+        console.log(EditItemID);
+        if(EditItemID != undefined && EditItemID != ''){
+            $('div.shopItemBox[data-eb-id="'+EditItemID+'"]').remove();
+        } $(this).attr('data-eb-target','');
+        
+
         $('#shopNewItem').modal('hide');
     });
 
     // Atualiza o valor em real baseado na cotação do dolar e no valor inserido no input
-    
+
     $('#shopItemValue').keyup(function(){
         const valor = (parseFloat($(this).val()) * parseFloat($('#shopNewItem').data('eb-dolar'))).toFixed(2);
         $('#shopItemRealValue').text( valor == 'NaN' ? '0.00' : valor.toString().replace('.', ','));
     })
-    
 
     $(document).on('click', '.ishopItemTrash', function() {
         $(this).closest('.shopItemBox').remove();
@@ -520,16 +528,16 @@ $(function () {
     });
 
     // Remove o item do shop que estava sendo editado
-    $('button#shopItemSubmit').click(function(){
-        const id = $(this).data('eb-target');
-        if(id != undefined && id != ''){
-            $('div.shopItemBox[data-eb-id="'+id+'"]').remove();
-        }
-        $(this).data('eb-target') = '';
-    })
+    // $('button#shopItemSubmit').click(function(){
+    //     const id = $(this).data('eb-target');
+    //     if(id != undefined && id != ''){
+    //         $('div.shopItemBox[data-eb-id="'+id+'"]').remove();
+    //     }
+    //     $(this).attr('data-eb-target','');
+    // });
 
     // Compra do item do shop
-    $('#compraModalMetodo').change(function() {
+    $('#compraModalMetodo').change(function () {
         const compraMetodo = $('#compraModalMetodo');
         var parcelas = $('#compraModalParcela');
         parcelasQT = parseInt((isNaN(parcelas.val())) ? 1 : parcelas.val()); // Quantidade de parcelas
@@ -558,7 +566,7 @@ $(function () {
         }
 
         // Verifica se o cartão tem limite e se não tiver, desativa ele
-        compraMetodo.find('option').each(function() {
+        compraMetodo.find('option').each(function () {
             if ($(this).val() > 0) {
                 $(this).prop('disabled', (($(this).data('eb-limite') < valorTotal) ? true : false));
             }
@@ -575,7 +583,7 @@ $(function () {
         valorTexto.text(valorTotal);
     });
 
-    $('#compraModalQuantidadeMenos, #compraModalQuantidadeMais').click(function() {
+    $('#compraModalQuantidadeMenos, #compraModalQuantidadeMais').click(function () {
         var quantidade = $('#compraModalQuantidade');
         const maximo = parseInt(quantidade.attr('max'));
         const numero = parseInt($(this).data('eb-quantidade'));
@@ -585,7 +593,7 @@ $(function () {
         $('#compraModalMetodo').trigger('change');
     });
 
-    $('#compraModalQuantidade').change(function(){
+    $('#compraModalQuantidade').change(function () {
         var quantidade = $('#compraModalQuantidade');
         const maximo = parseInt(quantidade.attr('max'));
         var valor = parseInt($(this).val());
@@ -594,10 +602,57 @@ $(function () {
         $('#compraModalMetodo').trigger('change');
     });
 
-    $('#compraModalParcela').change(function() {
+    $('#compraModalParcela').change(function () {
         $('#compraModalMetodo').trigger('change');
     });
 
+
+
+    // SimpleTables
+    const SimpleTablesDefault = {
+        searchable: true,
+        sortable: true,
+        paging: true,
+        perPage: 50,
+        labels: {
+            placeholder: "Buscar...",
+            perPage: "Itens por página",
+            noRows: "Nenhum registro encontrado",
+            info: "Mostrando {start} a {end} de {rows} registros"
+        }
+    };
+
+    function EBDatatables(seletor, opcoesPersonalizadas = {}) {
+        if (typeof simpleDatatables === 'undefined') {
+            console.error('simpleDatatables não foi carregado');
+            return null;
+        }
+        
+        // Mescla as opções padrão com as personalizadas (se houver)
+        const opcoesFinais = { ...SimpleTablesDefault, ...opcoesPersonalizadas };
+        
+        return new simpleDatatables.DataTable(seletor, opcoesFinais);
+    }
+
+    // Tabela de Usuários para exibição root
+    if($('#AdminUserList').length){ const rootUserList = EBDatatables('#AdminUserList'); }
+    // Tabela de Ranking - Shop
+    if($('table.tableReorder').length){ 
+        
+        var tableReorder = [];
+        $('table.tableReorder').each(function(chave, table){
+            tableReorder[chave] = EBDatatables('#'+$(this).attr('id'), {sort: {column: 2, order: 'desc'}}); 
+        });
+
+        $('table.tableReorder thead tr th').click(function(){
+            var index = 1;
+            $('table.tableReorder tbody tr').each(function(){
+                $(this).find('td:first').text(index);
+                index++;
+            });
+        }).trigger('click');
+    
+    }
 });
 
 function goTop() { $('html, body').animate({ scrollTop: 0 }, 'fast'); } // Scroll to top of page

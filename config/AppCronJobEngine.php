@@ -34,6 +34,10 @@
                 }
 
                 $Conta -> findConta(); // Busca informações da conta
+                
+                // NOVO: Processa as parcelas do cartão de crédito
+                // $Conta -> CartoesProcessarParcelas(); // Gera as próximas parcelas se houver
+                
                 $Conta -> CartoesFaturaGerar(); // Gera a fatura com base nos itens aleatórios
                 $Conta -> InvestimentoRentabilizar(); // Realiza a rentabilidade dos investimentos
                 $Conta -> PagamentosGerar(); // Gera os pagamentos do ciclo em relação a configuração 

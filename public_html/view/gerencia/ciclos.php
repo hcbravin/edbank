@@ -16,7 +16,7 @@
                     <li class="list-group-item">Outras ações</li>
                 </ol>
                 <div class="text-end mt-2">
-                    <button type="button" data-eb-cfm="exe/agencia/ciclo/<?= $URI[1]; ?>" class="btn btn-sm btn-primary w-px-150"><i class="bi bi-rocket-fill me-1"></i> Executar Ciclo</button>
+                    <button type="button" data-eb-cfm="exe/agencia/ciclo/<?= $URI[1]; ?>/<?= Token('get'); ?>" class="btn btn-sm btn-primary w-px-150"><i class="bi bi-rocket-fill me-1"></i> Executar Ciclo</button>
                 </div>
             </div>
         </div>

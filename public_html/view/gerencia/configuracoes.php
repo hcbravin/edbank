@@ -4,6 +4,7 @@
             <button type="button" class="btn btn-sm btn-dark w-px-150" data-bs-toggle="modal" data-bs-target="#ModalConfigCopy"><i class="bi bi-copy me-1"></i> Copiar</button>
             <button type="submit" class="btn btn-sm btn-success w-px-150"><i class="bi bi-floppy-fill me-1"></i> Salvar</button>
             <input type="hidden" name="agencia" value="<?= $URI[1]; ?>">
+            <?= Token(); ?>
         </div>
     </div>
 

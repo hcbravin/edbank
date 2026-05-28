@@ -278,7 +278,7 @@ function Token($Token=false){ // Gera ou verifica um token
 	}
 
     // Verificação se o token informado consta na sessão tokens
-    if ($Token !== false) {
+    if ($Token !== false AND $Token !== 'get') {
 		// Caso seja informado um token, ele irá verificar se ele consta na sessão
         if (($key = array_search($Token, $_SESSION['form_token'], true)) !== false) {
 			// Caso o token conste na sessão, ele irá remover o token da sessão e retornar verdadeiro
@@ -290,10 +290,22 @@ function Token($Token=false){ // Gera ou verifica um token
     }else{
 
 		// Caso não seja informado um token, ele irá gerar um novo token e atribuir a sessão;
-		$Token = bin2hex(random_bytes(16));
-		$_SESSION['form_token'][] = $Token;
-		return '<input type="hidden" name="form_token" value="'.$Token.'">';
+		$GToken = bin2hex(random_bytes(16));
+		$_SESSION['form_token'][] = $GToken;
+		return $Token == 'get' ? "TKV::$GToken" : '<input type="hidden" name="form_token" value="'.$GToken.'">';
 	}
+}
+function TokenGetVerificar(){ // Verifica se o token foi passado na URL
+	global $URI;
+	$Marcador = 'TKV::';
+	foreach ($URI as $KeyU => $ViewU) {
+		if (str_starts_with($ViewU, $Marcador)) {
+			$GLOBALS['_POST']['form_token'] = substr($ViewU, strlen($Marcador)); // adiciona o token ao $_POST
+			return true;
+			break;
+		}
+	}
+	return false;
 }
 function crc16($payload) { // Calcula o CRC16
     $polynomial = 0x1021;
@@ -488,18 +500,22 @@ function GoogleTranslateAPI($texto) {
 
 
 function Publicidade($Return = false){
-	$Json = file_get_contents("https://hcbravin.github.io/edbank/api/sponsors.json");
-	$Json = json_decode($Json, true);
+	try {
+		$Json = file_get_contents("https://hcbravin.github.io/edbank/api/sponsors.json");
+		$Json = json_decode($Json, true);
 
-	switch($Return){
-		case 'company':
-			return $Json['sponsors'][0]['company'];
-			break;
-			
-		case 'person':
-			return $Json['sponsors'][0]['person'];
-			break;
+		switch($Return){
+			case 'company':
+				return $Json['sponsors'][0]['company'];
+				break;
+				
+			case 'person':
+				return $Json['sponsors'][0]['person'];
+				break;
 
-		default: return $Json['sponsors'][0];
+			default: return $Json['sponsors'][0];
+		}
+	} catch (Exception $e) {
+		return false;
 	}
 }

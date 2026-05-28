@@ -11,8 +11,10 @@
 <script src="/js/chart.umd.min.js"></script>
 <script src="/js/html5-qrcode.min.js"></script>
 <script src="/js/qrcode.min.js"></script>
+<script src="/js/simple-datatables.js"></script>
 <script src="/js/LearnJS.js?<?= fileatime(PublicHTML . '/js/LearnJS.js'); ?>"></script>
 <!-- Styles --> 
 <link href="/css/bootstrap.min.css" rel="stylesheet">
 <link href="/css/bootstrap-icons.min.css" rel="stylesheet">
+<link href="/css/simple-datatables.css" rel="stylesheet">
 <link href="/css/LearnStilo.css?<?= fileatime(PublicHTML . '/css/LearnStilo.css'); ?>" rel="stylesheet">

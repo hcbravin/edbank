@@ -1,0 +1,9 @@
+{
+  "admins": [
+    "seu-email@provedor.com"
+  ],
+  "options": {
+    "info": "Renomeie este arquivo para admin_auth.json após configura-lo",
+    "allow_any_authenticated_user": false
+  }
+}

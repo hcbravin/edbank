@@ -1,10 +1,10 @@
 <?php
 
 	$db = new mysqli(
-		'localhost',
-		'SEU_USUARIO_MYSQL',
-		'SUA_SENHA_MYSQL',
-		'edbank'
+		$_ENV['DB_HOST'],
+		$_ENV['DB_USER'],
+		$_ENV['DB_PASS'],
+		$_ENV['DB_NAME']
 	);
 
 	if($db -> connect_errno){

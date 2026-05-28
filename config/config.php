@@ -1,15 +1,18 @@
 <?php
 // Configuração do SMTP
 $SMTPConfig = [
-    'host' => 'SEU_HOST_SMTP',
-    'port' => 587,
+    'host' => $_ENV['SMTP_HOST'],
+    'port' => $_ENV['SMTP_PORT'],
     'encryption' => 'tls',
-    'username' => 'SEU_EMAIL_SMTP',
-    'password' => 'SUA_SENHA_SMTP'
+    'username' => $_ENV['SMTP_USER'],
+    'password' => $_ENV['SMTP_PASS']
 ]; 
 
 // Configuração do Hybridauth
-$baseUrl = 'SEU_GOOGLE_BASE_URL';
+$baseUrl = 
+    $_SERVER['SERVER_NAME'] == 'meubanco.com' ?
+    'https://meubanco.com/login/google' : 
+    'https://edbank.meusigma.com/login/google';
 
 $config = [
     'callback' => $baseUrl,
@@ -17,8 +20,8 @@ $config = [
         'Google' => [
             'enabled' => true,
             'keys'    => [
-                'id'     => 'SEU_GOOGLE_ID',
-                'secret' => 'SEU_GOOGLE_SECRET',
+                'id'     => $_ENV['GOOGLE_ID'],
+                'secret' => $_ENV['GOOGLE_SECRET'],
             ],
             'scope' => 'openid email profile',
             'authorize_url_parameters' => [

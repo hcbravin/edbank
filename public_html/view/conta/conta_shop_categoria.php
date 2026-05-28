@@ -21,9 +21,18 @@
                                     <span class="ft-10">R$</span>
                                     <span class="fw-bold ft-16"><?= number_format($ViewP['price'] * $Shop->Dolar, 2, ',', '.'); ?></span>
                                 </div>
-                                <a href="/conta/<?= $URI[1]; ?>/shopping/produto/<?= $Shop -> categoriaID .'.'. $ViewP['id']; ?>" class="btn btn-outline-dark btn-sm">Detalhes</a>
+                                <div>
+                                    <?php if($ViewP['stock']){ ?>
+                                    <a href="/conta/<?= $URI[1]; ?>/shopping/produto/<?= $Shop -> categoriaID .'.'. $ViewP['id']; ?>" class="btn btn-outline-dark btn-sm">Detalhes</a>
+                                    <?php }else{ ?>
+                                    <span class="disabled btn btn-sm btn-outline-danger">Em Falta</span>
+                                    <?php } ?>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="text-start mb-0">
+                        <span class="ft-8 text-muted"><?= $ViewP['stock']; ?> Disponíveis</span>
                     </div>
                 </div>
             <?php } ?>

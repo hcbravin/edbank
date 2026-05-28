@@ -11,9 +11,16 @@
     $Conta = new Conta(); 
     $Conta -> contaID = $URI[1];
     $fConta = $Conta -> findConta();
+
     if($fConta == false){
         alert('Acesso negado a está conta.');
         shdr('');
+        goto Fim;
+    }
+
+    if($fConta['ag_fim'] . ' 23:59:59' < date('Y-m-d H:i:s') AND $fConta['ag_fim'] != '0000-00-00 00:00:00'){
+        alert('Sua agência (<strong>'.ZeroEsquerda($fConta['ag_num']).'</strong>) encontra-se fechada desde '.date('d/m/Y', strtotime($fConta['ag_fim'])), false, true);
+        require_once Views . '/main/publicidade.php';
         goto Fim;
     }
 

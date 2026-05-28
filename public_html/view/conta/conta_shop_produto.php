@@ -53,7 +53,7 @@
             <div class="align-self-center ft-12">
                 <span class="badge text-bg-secondary fw-normal rounded-end-0">Disponíveis</span><span class="rounded-start-0 badge text-bg-warning"><?= $Produto['stock']; ?></span>
             </div>
-            <button type="button" class="btn btn-sm btn-primary w-px-150" data-bs-target="#compraModal" data-bs-toggle="modal"><i class="bi bi-cart-plus me-1"></i> Comprar</button>
+            <button type="button" class="btn btn-sm btn-primary w-px-150 <?= $Produto['stock'] == 0 ? 'disabled' : ''; ?>" data-bs-target="#compraModal" data-bs-toggle="modal"><i class="bi bi-cart-plus me-1"></i> Comprar</button>
         </div>
     </div>
 </div>

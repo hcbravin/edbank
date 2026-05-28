@@ -1,10 +1,11 @@
-<?php if (!Logado()) { goto Fim; } 
-
+<?php 
 // PHP Version 8.4.18
-
-#if(!Token(@$_POST['form_token'])){ Alert('Acesso Negado!'); goto Fim;} 
-
-$P = $_POST; $countErro = 0; 
+// =========================================================================
+// Verificações de segurança
+if (!Logado()) { goto Fim; }
+if (!Token(@$_POST['form_token'])) { Alert('Token de Segurança expirado!'); goto Fim; }
+$P = $_POST; $countErro = 0;
+// =========================================================================
 
 if($URI[1]=='nova-agencia'){
 
