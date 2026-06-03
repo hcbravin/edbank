@@ -1171,8 +1171,100 @@ class Agencia
 				$Base->execute();
 				$Map['contas'] = $Base->get_result()->fetch_all(MYSQLI_ASSOC);
 				$Base->close();
+				break;
+
+			case 'cartao':
+
+				// Busca todos os cartões
+				$Base = $db -> prepare("SELECT 
+					contas.ct_id,
+					user.user_nome,
+					cartoes.card_id
+				FROM contas
+				INNER JOIN cartoes ON (cartoes.card_conta = contas.ct_id)
+				INNER JOIN user ON (user.user_id = contas.ct_user)
+				WHERE contas.ct_agencia = ?");
+				$Base -> bind_param("i", $this->id);
+				$Base -> execute();
+
+				foreach($Base -> get_result()->fetch_all(MYSQLI_ASSOC) as $View){
+					// Cria o elemento de vetor
+					if(!isset($Map['cartao'][$View['ct_id']])){
+						$Map['cartao'][$View['ct_id']] = [
+							'nome' => $View['user_nome'],
+							'card' => [],
+							'compras' => 0,
+							'parcelas' => 0,
+							'total' => 0
+						];
+					}
+
+					// Processa o resultado
+					$Map['cartao'][$View['ct_id']]['card'][] = $View['card_id'];
+				}
+				$Base -> close();
+
+				$Base = $db -> prepare("SELECT contas.ct_id, cartoes_fatura.* FROM cartoes_fatura  
+				INNER JOIN cartoes ON (cartoes.card_id = cartoes_fatura.ctf_cartao)
+				INNER JOIN contas ON (contas.ct_id = cartoes.card_conta)
+				WHERE contas.ct_agencia = ?");
+				$Base -> bind_param("i", $this->id);
+				$Base -> execute();
+
+				foreach($Base -> get_result()->fetch_all(MYSQLI_ASSOC) as $View){
+
+					$View['ctf_fatura'] = json_decode($View['ctf_fatura'], true); // Transofmra em array
+
+					if(array_key_exists($View['ct_id'], $Map['cartao'])){ // Verifica se o dono do cartão foi encontrado
+						$Map['cartao'][$View['ct_id']]['compras'] += (isset($View['ctf_fatura']['itens']) ? count($View['ctf_fatura']['itens']) : 0);  // Incrementa a quantidade de compras
+						$Map['cartao'][$View['ct_id']]['total'] += $View['ctf_valor']; // Incrementa o total
+						$Map['cartao'][$View['ct_id']]['parcelas'] += (isset($View['ctf_fatura']['parcelas']) ? count(array_filter($View['ctf_fatura']['parcelas'], function($item) { return $item['parcelaAtual'] == 1; })) : 0); // Incrementa a quantidade de parcelas
+					}
+				}
+
+				$Base -> close();
+				break;
+
+			case 'investimento':
+				$Map['investimento'] = [];
+				$Map['investimentoChart'] = [];
 
 
+				$Base = $db -> prepare("SELECT
+					contas.ct_id,
+					user_nome,
+					investimentos.*
+				FROM contas
+				INNER JOIN user ON (user.user_id = contas.ct_user)
+				INNER JOIN investimentos  ON (investimentos.inv_conta = contas.ct_id)
+				WHERE contas.ct_agencia = ?;");
+				$Base -> bind_param("i", $this->id);
+				$Base -> execute();
+
+				foreach($Base -> get_result()->fetch_all(MYSQLI_ASSOC) as $View){
+
+					if(!isset($Map['investimento'][$View['ct_id']])){
+						$Map['investimento'][$View['ct_id']] = [
+							'nome' => $View['user_nome'],
+							'quantidade' => 0,
+							'total' => 0
+						];
+					}
+
+					// Processa o resultado
+					$Map['investimento'][$View['ct_id']]['quantidade']++; // Incrementa a quantidade de investimentos
+					$Map['investimento'][$View['ct_id']]['total'] += $View['inv_capital']; // Incrementa o total
+
+					// Grafico
+					if(!isset($Map['investimentoChart'][$View['inv_tipo']])){ 
+						$Map['investimentoChart'][$View['inv_tipo']] = [
+							'nome' => $View['inv_info'],
+							'quantidade' => 0
+						];
+					}
+					$Map['investimentoChart'][$View['inv_tipo']]['quantidade']++;
+				}
+				$Base -> close();
 				break;
 
 

@@ -165,6 +165,22 @@
 
         goto Fim;}
 
+        // Ranking Cartão
+        if($URI[3]=='cartao'){
+            $Chart = $Agencia -> Chart('cartao');
+            require_once Views.'/gerencia/ranking_cartao.php';
+
+        goto Fim;}
+
+        // Ranking Investimentos
+        if($URI[3]=='investimentos'){
+            $Chart = $Agencia -> Chart('investimento');
+            require_once Views.'/gerencia/ranking_investimento.php';
+
+        goto Fim;}
+
+        // Ranking Empréstimos
+
     goto Fim;}
 
     if($URI[2]=='ciclo'){
