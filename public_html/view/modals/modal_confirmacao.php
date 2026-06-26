@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                Você está certo de que deseja prosseguir? Possivelmente esta ação não poderá ser desfeita!
+                Você está certo de que deseja prosseguir?<br/>Possivelmente esta ação não poderá ser desfeita!
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-lg me-1"></i> Cancelar</button>

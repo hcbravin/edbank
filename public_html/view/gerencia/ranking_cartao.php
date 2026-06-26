@@ -16,7 +16,7 @@
                     <th>Cartões</th>
                     <th>Compras</th>
                     <th>Parcelas</th>
-                    <th>Total Pago</th>
+                    <th>Total Pago (R$)</th>
                 </tr>
             </thead>
             <tbody>

@@ -71,6 +71,7 @@
                     break;
                 case 'pendencias': print '<i class="bi bi-clock me-1"></i> Pendências'; break;
                 case 'configuracoes': print '<i class="bi bi-gear me-1"></i> Configurações'; break;
+                case 'fechar': print '<i class="bi bi-building-fill-lock me-1"></i> Fechar Agência'; break;
                 default: print 'Erro.';
             } ?>
             <?php switch($URI[4]){

@@ -1128,9 +1128,14 @@ class Agencia
 		switch ($Chart) {
 			case 'transacoes':
 				// Busca as o ranking de transacoes de clientes contabilizando o total de transações por cliente
-				$Base = $db->prepare("SELECT user_id, user_nome, COUNT(*) as transacoes FROM contas
+				$Base = $db->prepare("SELECT user_id, user_nome, 
+					COUNT(*) as transacoes,
+					SUM(tr_valor) as valor_total
+				
+				FROM contas
 				INNER JOIN agencia ON (agencia.ag_id = contas.ct_agencia)
 				INNER JOIN user ON (user.user_id = contas.ct_user)
+				INNER JOIN transferencias ON (transferencias.tr_origem = contas.ct_id)
 				WHERE ag_id = ?
 				GROUP BY user_id, user_nome
 				ORDER BY transacoes DESC");

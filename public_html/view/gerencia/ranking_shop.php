@@ -11,7 +11,7 @@
                     <th class="d-none d-sm-table-cell">#</th>
                     <th class="text-start ps-2">Nome</th>
                     <th>Itens</th>
-                    <th>Valor</th>
+                    <th>Valor (R$)</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,9 +20,8 @@
                     <td class="d-none d-sm-table-cell text-center">#</td>
                     <td class="border-start ps-2"><?= $User['user_nome']; ?></td>
                     <td class="border-start text-center"><?= $User['total_stock']; ?></td>
-                    <td class="border-start text-center d-flex justify-content-between">
-                        <span>R$</span>
-                        <span><?= number_format($User['valor_total'], 2, ',', '.'); ?></span>
+                    <td class="border-start text-center text-center">
+                        <?= number_format($User['valor_total'], 2, '.', ''); ?>
                     </td>
                 </tr>
                 <?php } ?>

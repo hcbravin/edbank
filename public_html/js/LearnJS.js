@@ -637,12 +637,20 @@ $(function () {
     // Tabela de Usuários para exibição root
     if($('#AdminUserList').length){ const rootUserList = EBDatatables('#AdminUserList'); }
     // Tabela de Ranking - Shop
+    var tableReorder = {};
     if($('table.tableReorder').length){ 
-        
-        var tableReorder = [];
+
         $('table.tableReorder').each(function(chave, table){
-            tableReorder[chave] = EBDatatables('#'+$(this).attr('id'), {sort: {column: 2, order: 'desc'}}); 
+            let eID = $(this).attr('id');
+            tableReorder[eID] = EBDatatables('#'+eID, {sort: {column: 2, order: 'desc'}}); // Cria o objeto da tabela
+            // Adiciona o botão de exportação
+            $('#'+eID).closest('div').prepend('<div class="my-1">'+
+                '<button type="button" class="btn btn-sm btn-secondary simpleDatatablesExport" data-eb-target="'+eID+'">Exportar CSV</button>'+
+                
+            '</div>');
         });
+
+        console.log(tableReorder);
 
         $('table.tableReorder thead tr th').click(function(){
             var index = 1;
@@ -653,6 +661,33 @@ $(function () {
         }).trigger('click');
     
     }
+
+    $(document).on('click', 'button.simpleDatatablesExport', function(){
+        const eID = $(this).data('eb-target');
+        const tableInstance = tableReorder[eID];
+        
+        if (tableInstance && window.simpleDatatables && window.simpleDatatables.exportCSV) {
+            // Usa a função de exportação separada (versão 5+)
+            window.simpleDatatables.exportCSV(tableInstance, {
+                download: true,
+                filename: eID
+            });
+        } else if (tableInstance && typeof tableInstance.export === 'function') {
+            // Fallback para versões antigas
+            tableInstance.export({
+                type: "csv",
+                filename: eID,
+                download: true
+            });
+        } else {
+            console.error('Função de exportação não disponível');
+            console.log('Objetos disponíveis:', {
+                simpleDatatables: window.simpleDatatables,
+                exportCSV: window.simpleDatatables?.exportCSV,
+                tableInstance: tableInstance
+            });
+        }
+    });
 });
 
 function goTop() { $('html, body').animate({ scrollTop: 0 }, 'fast'); } // Scroll to top of page

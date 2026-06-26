@@ -14,7 +14,7 @@
                     <th>#</th>
                     <th>Nome</th>
                     <th>Quantidade</th>
-                    <th>Valor Total</th>
+                    <th>Valor Total (R$)</th>
                 </tr>
             </thead>
             <tbody>
