@@ -606,6 +606,25 @@ $(function () {
         $('#compraModalMetodo').trigger('change');
     });
 
+    // Shopping Itens Gerencia
+    $('.iShopItemReduce,.iShopItemIncrease').click(function() {
+        const inValor = $(this).hasClass('iShopItemReduce') ? -1 : 1;
+        const max = parseInt($(this).closest('li.iShopItem').removeClass('opacity-25').find('span.iShopItemContaStock').text());
+        let input = $(this).closest('div.input-group').find('input.iShopItemStock');
+        let valor = parseInt(input.val()) + parseInt(inValor);
+        input.val((valor < 0) ? 0 : valor);
+    });
+
+    $('input.iShopItemStock').change(function() {
+        const max = parseInt($(this).closest('li.iShopItem').removeClass('opacity-25').find('span.iShopItemContaStock').text());
+        let valor = parseInt($(this).val());
+        $(this).val((valor < 0) ? 0 : valor);
+    });
+
+    $('button.iShopItemTrash').click(function(){
+        $(this).closest('li.iShopItem').addClass('opacity-25').find('input.iShopItemStock').val(0);
+    });
+
 
 
     // SimpleTables

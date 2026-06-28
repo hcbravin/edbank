@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-12 col-lg-4 mb-3 mb-lg-0">
                 <p class="edbank mb-0 ft-14">Education Bank</p>
-                <small>Seu parceiro financeiro de confança há mais de <?= date('Y') - 2025; ?> anos.</small>
+                <small>Seu parceiro financeiro de confiança há mais de <?= date('Y') - 2025; ?> anos.</small>
             </div>
             <div class="col-12 col-lg-8 text-center align-self-center">
                 <a href="/wiki/edbank" class="btn btn-sm btn-outline-light me-3 mb-2 mb-sm-0">Sobre o ED Bank</a>

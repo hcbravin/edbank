@@ -2,7 +2,7 @@
 // =========================================================================
 // Verificações de segurança
 if (!Logado()) { goto Fim; }
-if (!Token(@$_POST['form_token'])) { Alert('Token de Segurança expirado!'); goto Fim; }
+// if (!Token(@$_POST['form_token'])) { Alert('Token de Segurança expirado!'); goto Fim; }
 $P = $_POST; $countErro = 0;
 // =========================================================================
 
@@ -271,28 +271,100 @@ if ($URI[1]=='conta'){
     // Oprações de shopping
     if($URI[2]=='shop'){
 
-        // Remove item comprado
-        if($URI[3] == 'remove'){
-            // /upg/conta/shop/remove/{agencia}/{cliente}/{item}/{quantidade}/{token}
+        // Atualiza os itens do shop de um cliente
+        if($URI[3]=='itens'){
 
-            // Verifica se o id da agência pertence ao usuário executor
-            if(!array_key_exists($URI[4], $MS['gerente'])){
+            // Verifica se a agência pertence ao gerente
+            if(!array_key_exists($P['agencia'], $MS['gerente'])){
                 $countErro++;
-                Alert('Agência não encontrada.');
-                shdr('gerencia/'.$URI[4]);
+                Alert('Agência nao encontrada.');
+                shdr('gerencia/'.$P['agencia']);
                 goto Status;
             }
 
+            // Busca a conta do cliente e carrega o shopping dele
             $Conta = new Conta();
-            $Conta -> contaID = $URI[5];
-            $Conta -> agenciaID = $URI[4];
-            
-            if(!$Conta -> setMyShopItem($URI[6], ($URI[7] == 0 ? $URI[7] : $URI[7]))){
-                $countErro++;
+            $Conta -> contaID = $P['conta'];
+            $Conta -> agenciaID = $P['agencia'];
+            $Shop = $Conta -> getMyShopItens();
+
+            // Remove itens desnecessários - Usado para debug
+            array_walk($Shop, function(&$item){
+                unset(
+                    $item['cts_item']['description'], 
+                    $item['cts_item']['images'],
+                    $item['cts_item']['thumbnail']
+                );
+            });
+
+            // Querys
+            $Del = $db -> prepare("DELETE FROM contas_shop WHERE cts_conta = ? AND cts_id = ? LIMIT 1");
+            $Upg = $db -> prepare("UPDATE contas_shop 
+                SET cts_item = JSON_SET(
+                    cts_item, 
+                    '$.stock', ?,
+                    '$.price', ?
+                )
+                WHERE cts_conta = ? AND cts_id = ?");
+
+            // Vamos fazer um foreach para verificar se os itens passados são de fato da conta que foi carregada
+            foreach($P['item'] as $KeyI => $ViewI){ // Key -> ID, View -> Quantidade
+                if(array_key_exists($KeyI, $Shop)){
+
+                    // Se a quantidade for igual a registrada, pulamos
+                    if($ViewI == $Shop[$KeyI]['cts_item']['stock']){
+                        continue;
+                    }
+
+                    // Se a quantidade for zero, já vamos remover ele de cara.
+                    if($ViewI == 0){
+                        $Del -> bind_param("ii", $P['conta'], $KeyI);
+                        if(!$Del -> execute()){
+                            $countErro++;
+                        }
+                        continue;
+                    }
+
+                    // Se a quantidade for diferente, mas, não for zero, alteramos.
+                    if($ViewI > 0 AND $ViewI != $Shop[$KeyI]['cts_item']['stock']){
+                        // Calcula o novo preço baseado no valor unitario original
+                        $Price = number_format($Shop[$KeyI]['cts_item']['price_unity'] * $ViewI, 2, '.', '');
+
+                        $Upg -> bind_param("idii", $ViewI, $Price, $P['conta'], $KeyI);
+                        if(!$Upg -> execute()){
+                            $countErro++;
+                        }
+                    }
+                }
             }
 
-            shdr("gerencia/{$URI[4]}/contas/{$URI[5]}/shop");
+            shdr("gerencia/{$P['agencia']}/contas/{$P['conta']}/shop");
+
+            
         goto Status;}
+
+        // Remove item comprado
+        // if($URI[3] == 'remove'){
+        //     // /upg/conta/shop/remove/{agencia}/{cliente}/{item}/{quantidade}/{token}
+
+        //     // Verifica se o id da agência pertence ao usuário executor
+        //     if(!array_key_exists($URI[4], $MS['gerente'])){
+        //         $countErro++;
+        //         Alert('Agência não encontrada.');
+        //         shdr('gerencia/'.$URI[4]);
+        //         goto Status;
+        //     }
+
+        //     $Conta = new Conta();
+        //     $Conta -> contaID = $URI[5];
+        //     $Conta -> agenciaID = $URI[4];
+            
+        //     if(!$Conta -> setMyShopItem($URI[6], ($URI[7] == 0 ? $URI[7] : $URI[7]))){
+        //         $countErro++;
+        //     }
+
+        //     shdr("gerencia/{$URI[4]}/contas/{$URI[5]}/shop");
+        // goto Status;}
     }
 }
 
