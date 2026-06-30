@@ -2389,18 +2389,20 @@ label {
 }
 
 /* TABELAS */
-tr.main td {
+tr.main td, tr.main th {
 	background-color: #343a40;
 	color: #FFF;
 	text-align: center;
 	font-size: 10pt;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 }
 
-tr.main td:nth-child(n) {
+tr.main td:nth-child(n), tr.main th:nth-child(n) {
 	border-left: dashed 1px #FFF;
 }
 
-thead tr.main td:first-child {
+thead tr.main td:first-child, thead tr.main th:first-child {
 	border-left: none !important;
 }
 

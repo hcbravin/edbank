@@ -342,29 +342,6 @@ if ($URI[1]=='conta'){
 
             
         goto Status;}
-
-        // Remove item comprado
-        // if($URI[3] == 'remove'){
-        //     // /upg/conta/shop/remove/{agencia}/{cliente}/{item}/{quantidade}/{token}
-
-        //     // Verifica se o id da agência pertence ao usuário executor
-        //     if(!array_key_exists($URI[4], $MS['gerente'])){
-        //         $countErro++;
-        //         Alert('Agência não encontrada.');
-        //         shdr('gerencia/'.$URI[4]);
-        //         goto Status;
-        //     }
-
-        //     $Conta = new Conta();
-        //     $Conta -> contaID = $URI[5];
-        //     $Conta -> agenciaID = $URI[4];
-            
-        //     if(!$Conta -> setMyShopItem($URI[6], ($URI[7] == 0 ? $URI[7] : $URI[7]))){
-        //         $countErro++;
-        //     }
-
-        //     shdr("gerencia/{$URI[4]}/contas/{$URI[5]}/shop");
-        // goto Status;}
     }
 }
 

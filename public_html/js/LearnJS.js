@@ -680,6 +680,18 @@ $(function () {
         }).trigger('click');
     
     }
+    // Tabela de Pendencias das contas pela gerencia
+    if($('#gerenciaPendenciasContas').length){
+        const gerPendenciasContasID = 'gerenciaPendenciasContas';
+        const gerPendenciasContas = EBDatatables('#' + gerPendenciasContasID);
+        $('input[type="search"][aria-controls="'+gerPendenciasContasID+'"]').focus();
+
+        $('button.getPendenciasContasButtonFinalizar').click(function(){
+            $('#'+gerPendenciasContasID).find('input[type="checkbox"]').attr('checked',false);
+            $(this).closest('tr.iPendenciasConta').find('input[type="checkbox"]').attr('checked',true);
+            $('#gerenciaPendenciasSend').trigger('click');
+        });
+    }
 
     $(document).on('click', 'button.simpleDatatablesExport', function(){
         const eID = $(this).data('eb-target');

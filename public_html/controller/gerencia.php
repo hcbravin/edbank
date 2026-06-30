@@ -116,6 +116,11 @@
 
     goto Fim;}
 
+    if($URI[2]=='pendencias'){ // Pendências da agência
+        $Contas = $Agencia -> getContas();
+        require_once Views.'/gerencia/pendencias.php';
+    goto Fim;}
+
     if($URI[2]=='configuracoes'){
         
         $Historico = $Taxas -> MediaAnual();

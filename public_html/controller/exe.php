@@ -3,7 +3,7 @@
 // =========================================================================
 // Verificações de segurança
 if (!Logado()) { goto Fim; }
-if (!Token(@$_POST['form_token'])) { Alert('Token de Segurança expirado!'); goto Fim; }
+// if (!Token(@$_POST['form_token'])) { Alert('Token de Segurança expirado!'); goto Fim; }
 $P = $_POST; $countErro = 0;
 // =========================================================================
 
@@ -578,7 +578,35 @@ if($URI[1]=='agencia'){
 
         shdr('gerencia/' . $URI[3]);
         goto Status;
-    }
+    goto Status;}
+
+    // Pendencias
+    if($URI[2] == 'liquidar-pendencias'){
+
+        $Contas = $Agencia -> getContas();
+
+        // Ira verificar se a conta é de fato da agência e finalizar todas as contas selecionadas
+        foreach($P['contas'] as $contaID => $userID){
+            if(array_key_exists($userID, $Contas)){ // Verifica se o usuário informado possui conta na agência
+
+                if($Contas[$userID]['ct_id'] != $contaID){ // Verifica se a conta informada é de fato do usuário
+                    continue;
+                }
+
+                $Conta = new Conta();
+                $Conta -> contaID = $contaID;
+                $Conta -> agenciaID = $AgenciaID;
+
+                if(!$Conta -> LiquidarPagamentos()){
+                    $countErro++;
+                }
+
+            }
+        }
+
+        shdr("gerencia/{$AgenciaID}/pendencias");
+
+    goto Status;}
 
 goto Status;}
 

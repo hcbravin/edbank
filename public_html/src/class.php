@@ -470,6 +470,20 @@ class Investimentos
 
 		return (bool) $Return;
 	}
+
+	// Ativo
+	public function Ativo($Ativo = 1){
+		global $db;
+
+		try {
+			$Upg = $db -> prepare("UPDATE investimentos SET inv_ativo = ? WHERE inv_id = ? LIMIT 1");
+			$Upg -> bind_param("ii", $Ativo, $this->invID);
+			return (bool) $Upg -> execute();
+
+		} catch (Exception $e) {
+			return false;
+		}
+	}
 }
 
 class Usuario
@@ -2004,6 +2018,30 @@ class Conta
 			return false;
 		}
 	}
+	private function CartoesAnteciparParcela($faturaID, $parcelaID, $parcelaAtual){ // Antecipa o pagamento de uma determinada parcela.
+		global $db;
+
+		if(
+			!is_numeric($this -> contaID) OR
+			!is_numeric($this -> cardID) OR 
+			!is_numeric($faturaID) OR
+			!is_numeric($parcelaID) OR 
+			!is_numeric($parcelaAtual)
+		){return false;}
+
+		try {
+			$CaminhoJson = "$.parcelas[{$parcelaID}].parcelaAtual";
+			$Upg = $db -> prepare("UPDATE cartoes_fatura SET ctf_fatura = JSON_SET(
+				ctf_fatura, ?, ?
+			) WHERE ctf_id = ? AND ctf_cartao = ? LIMIT 1");
+			$Upg -> bind_param("siii", $CaminhoJson, $parcelaAtual, $faturaID, $this -> cardID);
+			return boolval($Upg -> execute());
+
+		} catch (Exception $e) {
+			error_log("Erro ao processar pagamento do cartão pelo usuário: " . $e->getMessage() . " em " . $e->getFile() . " na linha " . $e->getLine());
+			return false;
+		}
+	}
 	public function CartoesCancelar($CardID)
 	{ // Cancelamento do cartão de crédito
 		global $db, $MS;
@@ -2259,6 +2297,9 @@ class Conta
 	// Funções relacionadas a Pagamentos
 	public function updPagamentos($Item)
 	{
+		// Recebo o json ou array contendo as informacoes para atualizar as mesmas.
+		// O json ou array recebido é o mesmo que contem toda a linha do processamento do pagamento
+
 		global $db;
 		// Promove verificacoes para validar o item de pagamento passado.
 		if (
@@ -2327,6 +2368,86 @@ class Conta
 		$Ins = $db->prepare("INSERT INTO contas_pagamentos (ctp_conta, ctp_contas) VALUES (?, ?)");
 		$Ins->bind_param("is", $this->contaID, $this->Pagamentos);
 		return (bool) $Ins->execute();
+	}
+	public function LiquidarPagamentos(){
+
+		$LiquidaError = 0;
+
+		/* 
+			Etapa de pagamento das contas ainda pendentes:
+		*/
+		$Pagamentos = ($this -> getPagamentos());
+		foreach($Pagamentos as &$ViewPagamento){
+			foreach($ViewPagamento['ctp_contas'] as &$ViewContas){
+				if($this -> setExtrato(
+					"Execução bancária: " . $ViewContas['nome'],
+					(-1) * $ViewContas['valor']
+				)){ $ViewContas['pago'] = 1; }else{ $LiquidaError++; };
+			}
+
+			// Verifica se todos os pagamentos foram realizados para informar ao banco de dados
+			$Pagos = array_column($ViewPagamento['ctp_contas'], 'pago');
+            $ViewPagamento['ctp_aberto'] = (in_array(false, $Pagos, true) || in_array(0, $Pagos, true) || in_array('', $Pagos, true));
+            $ViewPagamento['ctp_contas'] = json_encode($ViewPagamento['ctp_contas']);
+
+			// Atualiza as informações
+			$LiquidaError += $this -> updPagamentos($ViewPagamento) ? 0 : 1;
+		}
+
+		/*
+			Etapa de pagamentos dos cartões:
+		*/
+		$Cartoes = $this -> Cartoes();
+		foreach($Cartoes as $ViewCartao){
+			
+			$this -> cardID = $ViewCartao['card_id']; // Informa qual cartão estamos trabalhando no momento
+			$cardFatura = $this -> CartoesFatura('open'); // Busca a fatura aberta do cartão
+			// ppre($cardFatura);
+			// Processa fatura do cartão
+			$cartaoPagar = $cardFatura['ctf_valor'] - $cardFatura['ctf_pagamento'];
+			$cartaoPagar = $cartaoPagar > 0 ? $cartaoPagar : 0;
+			$LiquidaError += $this -> CartoesPagar($cartaoPagar) ? 0 : 1;
+			
+			// Processa parcelas do cartão
+			$cardFatura['ctf_fatura'] = is_array($cardFatura['ctf_fatura']) ? $cardFatura['ctf_fatura'] : json_decode($cardFatura['ctf_fatura'], true); // Verifica se está no formato correto
+			// Parcelas
+			if(isset($cardFatura['ctf_fatura']['parcelas'])){ // Existem parcelas?
+				foreach($cardFatura['ctf_fatura']['parcelas'] as $KeyParcela => $ViewParcela){ // Vamos percorrer todos os itens parcelados
+
+					// Vamos verificar se existem parcelas em aberto
+					if($ViewParcela['parcelaAtual'] < $ViewParcela['pacelaTotal']){
+
+						// Calcula quantas parcelas faltam para pagar
+						$ParcelasRestantes = $ViewParcela['pacelaTotal'] - $ViewParcela['parcelaAtual'];
+						// Paga a parcela
+						$LiquidaError += $this -> setExtrato(
+							$ViewParcela['item'],
+							((-1) * $ViewParcela['valor'] * $ParcelasRestantes),
+						) ? 0 : 1;
+						// Informa que a parcela foi paga
+						$LiquidaError += $this -> CartoesAnteciparParcela( // faturaID, parcelaID, parcelaAtual
+							$cardFatura['ctf_id'],
+							$KeyParcela,
+							$ViewParcela['pacelaTotal']
+						) ? 0 : 1;	
+					}
+				}
+			}
+		}
+
+		/*
+			Etapa de investimentos
+		*/
+		$Investimentos = new Investimentos($this -> contaID);
+		$InvestimentosLista = $Investimentos -> Listar();
+		foreach($InvestimentosLista as $ViewInvestimento){
+			// Vamos retirar os fundos do investimento
+			$Investimentos -> invID = $ViewInvestimento['inv_id'];
+			$LiquidaError += $Investimentos -> Fundos((-1) * $ViewInvestimento['inv_saldo']) ? 0 : 1;
+			$Investimentos -> Ativo(0);
+		}
+
+		return boolval(!$LiquidaError);
 	}
 
 	// Shop Compras
