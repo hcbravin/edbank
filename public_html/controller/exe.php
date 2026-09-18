@@ -608,6 +608,69 @@ if($URI[1]=='agencia'){
 
     goto Status;}
 
+    // Subgerente
+    if($URI[2] == 'subgerente'){
+
+        $Subgerentes = ReKey($Agencia -> getSubgerentes(), 'agg_user'); // Busca os subgerentes no banco
+
+        // =============== Removendo gerentres ===============
+        if(is_numeric($URI[3]) AND $URI[4]=='remover'){
+            
+            // Verifica se o id informado do gerente corresponde a um id válido
+            if(array_key_exists($URI[5], $Subgerentes)){
+                // tenta temover o subgerente
+                if(!$Agencia -> setSubgerentes([$URI[5] => 'delete'])){
+                    $countErro++;
+                }
+
+            }else{
+                alert('Não foi localizado o cadastro do subgerente informado.');
+                $countErro++;
+            }
+
+            shdr("gerencia/{$URI[3]}/subgerentes");
+
+        goto Status;}
+
+        
+        // =============== Cadastrando novos gerentres ===============
+
+        // $P['subgerente'] = array_fill_keys(array_keys($P['subgerente']), 'insert');
+        if(array_key_exists('subgerente', $P)){
+
+            // Verifica se o id do gerente consta dentro dos valores informados
+            if(array_key_exists($MS['user_id'],$P['subgerente'])){
+                unset($P['subgerente'][$MS['user_id']]);
+            }
+
+            // Vamos verificar o post
+            foreach($P['subgerente'] as $KeyS=>$ViewS){
+
+                // Valida os valores de entrada
+                if(!in_array($ViewS, ['insert', 0, 1])){
+                    unset($P['subgerente'][$KeyS]);
+                    continue;
+                }
+
+                // Caso ele exista na base, mas, foi solicitado só alteração do status, marcamos para alterar
+                // Se o item no post existir na base, então o removemos.
+                if(array_key_exists($KeyS, $Subgerentes)){
+                    if($Subgerentes[$KeyS]['agg_ativo'] == $ViewS){
+                        unset($P['subgerente'][$KeyS]);
+                        unset($Subgerentes[$KeyS]);
+                    }
+                }
+            }
+
+            if(!$Agencia -> setSubgerentes($P['subgerente'])){
+                $countErro++;
+            }
+        }
+        
+        shdr("gerencia/{$P['agencia']}/subgerentes");
+
+    goto Status;}
+
 goto Status;}
 
 Status: 

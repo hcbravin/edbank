@@ -519,6 +519,62 @@ class Usuario
 		$this->findUser = (is_array($Map) and array_key_exists('user_id', $Map)) ? $Map : false;
 		return $this->findUser;
 	}
+	public function findEmail(): array
+	{
+		global $db;
+
+		// 1) Normaliza entrada (string ou array) para array
+		$raw = is_array($this->email)
+			? $this->email
+			: explode(',', (string) $this->email);
+
+		// 2) Trim + validação + remove vazios/inválidos
+		$Emails = array_map('trim', $raw);
+		$Emails = filter_var_array($Emails, FILTER_VALIDATE_EMAIL) ?: [];
+		$Emails = array_values(array_filter($Emails, fn($e) => $e !== false && $e !== null && $e !== ''));
+
+		if (count($Emails) === 0) {
+			$this->findUser = [];
+			return [];
+		}
+
+		// 3) Monta placeholders dinâmicos: ?,?,?
+		$placeholders = implode(',', array_fill(0, count($Emails), '?'));
+		$types        = str_repeat('s', count($Emails));
+
+		$sql = "SELECT * FROM user WHERE user_email IN ($placeholders)";
+
+		$Base = $db->prepare($sql);
+		if (!$Base) {
+			// Em produção, logue em vez de mostrar
+			error_log('prepare falhou: ' . $db->error);
+			return [];
+		}
+
+		// 4) bind_param com spread
+		$Base->bind_param($types, ...$Emails);
+
+		if (!$Base->execute()) {
+			error_log('execute falhou: ' . $Base->error);
+			return [];
+		}
+
+		$Map = $Base->get_result()->fetch_all(MYSQLI_ASSOC);
+		$Base->close();
+
+		// 5) Decide retorno
+		if (count($Emails) === 1) {
+			// Só 1 e-mail: retorna o único registro (ou vazio)
+			$this->findUser = count($Map) === 1 ? $Map[0] : [];
+			return $this->findUser;
+		}
+
+		// Vários e-mails: reindexa por user_id
+		$Map = ReKey($Map, 'user_id');
+
+		$this->findUser = $Map;
+		return $this->findUser;
+	}
 	public function getBancoInfo()
 	{
 		$_SESSION['contas'] = $this->Contas();
@@ -827,7 +883,7 @@ class Agencia
 	public function Prorrogar()
 	{
 		global $db;
-		$Base = $db->prepare("UPDATE agencia SET ag_fim = DATE_ADD(ag_fim, INTERVAL 30 DAY) WHERE ag_id = ? LIMIT 1");
+		$Base = $db->prepare("UPDATE agencia SET ag_fim = DATE_ADD(NOW(), INTERVAL 30 DAY) WHERE ag_id = ? LIMIT 1");
 		$Base->bind_param('i', $this->id);
 		if ($Base->execute()) {
 			$_SESSION['gerente'][$this->id]['ag_dias'] += 30;
@@ -1021,6 +1077,53 @@ class Agencia
 		}
 	}
 
+	// Subgerentes
+	public function getSubgerentes(){
+		global $db;
+		$Base = $db -> prepare("SELECT agencia_gerentes.*, user.user_nome, user.user_email FROM agencia_gerentes 
+		INNER JOIN user ON (user.user_id = agencia_gerentes.agg_user)
+		WHERE agg_agencia = ?");
+		$Base -> bind_param("i", $this->id);
+		$Base -> execute();
+		$this -> Agencia['subgerentes'] = ReKey($Base -> get_result() -> fetch_all(MYSQLI_ASSOC), 'agg_id');
+		return $this -> Agencia['subgerentes'];
+	}
+	public function setSubgerentes(array $Subgerentes): bool {
+		global $db;
+
+		try {
+			$Ins = $db -> prepare("INSERT INTO agencia_gerentes (agg_agencia, agg_user) VALUES (?, ?)");
+			$Upg = $db -> prepare("UPDATE agencia_gerentes SET agg_ativo = ? WHERE agg_agencia = ? AND agg_user = ? LIMIT 1");
+			$Del = $db -> prepare("DELETE FROM agencia_gerentes WHERE agg_agencia = ? AND agg_user = ? LIMIT 1");
+
+			foreach($Subgerentes as $KeyS => $ViewS){
+				
+				// Inserir elemento
+				if($ViewS == 'insert'){
+					$Ins -> bind_param("ii", $this->id, $KeyS);
+					$Ins -> execute();
+				}
+
+				// Atualizar elemento
+				if(in_array($ViewS, [0,1])){
+					$Upg -> bind_param("iii", $ViewS, $this->id, $KeyS);
+					$Upg -> execute();
+				}
+
+				// Deletar elemento
+				if($ViewS == 'delete'){
+					$Del -> bind_param("ii", $this->id, $KeyS);
+					$Del -> execute();
+				}
+			}
+
+			return true;
+		
+		}catch (Exception $e) {
+			return false;
+		}
+	}
+
 	// Outras funções
 	public function AtualizarSession()
 	{ // Atualiza a sessão informando novamente contas e gerencias
@@ -1140,6 +1243,53 @@ class Agencia
 		$Map = [];
 
 		switch ($Chart) {
+			case 'saldo':
+
+				$Map = ['contas' => $this -> getContas()];
+
+				// Extrai apenas os saldos
+				$saldos = array_column($Map['contas'], 'ct_saldo');
+				// $Map['grafico']['saldos'] = $saldos;
+				$minSaldo = min($saldos);
+				$maxSaldo = max($saldos);
+				$numeroFaixas = 10;
+
+				$ranger = ceil(($maxSaldo - $minSaldo) / $numeroFaixas);
+				$potencia = ($ranger == 0) ? 0 : (floor(log10(abs($ranger))));
+				$rangerFaixa = 5 * 10**$potencia;
+
+				// Encontra o múltiplo de 5000 mais próximo para baixo (negativos) e para cima (positivos)
+				$minFaixa = floor($minSaldo / $rangerFaixa) * $rangerFaixa;
+				$maxFaixa = ceil($maxSaldo / $rangerFaixa) * $rangerFaixa;
+
+				// Garante que o zero esteja incluso
+				if ($minFaixa > 0) $minFaixa = 0;
+				if ($maxFaixa < 0) $maxFaixa = 0;
+				$numeroFaixas = (($maxFaixa - $minFaixa) / $rangerFaixa);
+
+				for ($i = 0; $i < $numeroFaixas; $i++) {
+					$inicio = $minFaixa + ($i * $rangerFaixa);
+					$fim = $inicio + $rangerFaixa;
+					
+					$inicioFormatado = number_format($inicio, 0, ',', '.');
+					$fimFormatado = number_format($fim, 0, ',', '.');
+					
+					$Map['grafico']['label'][] = "{$inicioFormatado} a {$fimFormatado}";
+				}
+
+				// Conta os saldos em cada faixa
+				foreach ($saldos as $saldoV) {
+					// Calcula o índice baseado no intervalo a partir do mínimo
+					$indice = floor(($saldoV - $minFaixa) / $rangerFaixa);
+					// Garante que o índice não ultrapasse os limites
+					$indice = min(max($indice, 0), $numeroFaixas - 1);
+
+					if(!isset($Map['grafico']['values'][$indice])){ $Map['grafico']['values'][$indice] = 0; }
+					$Map['grafico']['values'][$indice]++;
+				}
+
+				break;
+
 			case 'transacoes':
 				// Busca as o ranking de transacoes de clientes contabilizando o total de transações por cliente
 				$Base = $db->prepare("SELECT user_id, user_nome, 
@@ -1964,10 +2114,7 @@ class Conta
 				}
 
 				// Gera as próximas parcelas extraindo em 1 a parcela, associando esse valor a fatura atual.
-				// ppre($CartaoBackFature['parcelas']);
-				// if(isset($CartaoBackFature['parcelas'])){
-					// $MapGastos['parcelas'] = $CartaoBackFature['parcelas'];
-
+				if(isset($MapGastos['parcelas'])){
 					foreach($MapGastos['parcelas'] as $KeyP => &$ViewP){
 
 						$ViewP['parcelaAtual']++; // Incrementa em 1 a quantidade de parcelas.
@@ -1984,7 +2131,7 @@ class Conta
 						];
 
 					}
-				// };
+				}
 				
 				// Criar a nova fatura
 				$cardInsFatura = $MapGastos['fatura'];
@@ -2402,34 +2549,36 @@ class Conta
 			
 			$this -> cardID = $ViewCartao['card_id']; // Informa qual cartão estamos trabalhando no momento
 			$cardFatura = $this -> CartoesFatura('open'); // Busca a fatura aberta do cartão
-			// ppre($cardFatura);
-			// Processa fatura do cartão
-			$cartaoPagar = $cardFatura['ctf_valor'] - $cardFatura['ctf_pagamento'];
-			$cartaoPagar = $cartaoPagar > 0 ? $cartaoPagar : 0;
-			$LiquidaError += $this -> CartoesPagar($cartaoPagar) ? 0 : 1;
-			
-			// Processa parcelas do cartão
-			$cardFatura['ctf_fatura'] = is_array($cardFatura['ctf_fatura']) ? $cardFatura['ctf_fatura'] : json_decode($cardFatura['ctf_fatura'], true); // Verifica se está no formato correto
-			// Parcelas
-			if(isset($cardFatura['ctf_fatura']['parcelas'])){ // Existem parcelas?
-				foreach($cardFatura['ctf_fatura']['parcelas'] as $KeyParcela => $ViewParcela){ // Vamos percorrer todos os itens parcelados
 
-					// Vamos verificar se existem parcelas em aberto
-					if($ViewParcela['parcelaAtual'] < $ViewParcela['pacelaTotal']){
+			if(is_array($cardFatura) AND array_key_exists('ctf_id', $cardFatura)){
+				// Processa fatura do cartão
+				$cartaoPagar = $cardFatura['ctf_valor'] - $cardFatura['ctf_pagamento'];
+				$cartaoPagar = $cartaoPagar > 0 ? $cartaoPagar : 0;
+				$LiquidaError += $this -> CartoesPagar($cartaoPagar) ? 0 : 1;
+				
+				// Processa parcelas do cartão
+				$cardFatura['ctf_fatura'] = is_array($cardFatura['ctf_fatura']) ? $cardFatura['ctf_fatura'] : json_decode($cardFatura['ctf_fatura'], true); // Verifica se está no formato correto
+				// Parcelas
+				if(isset($cardFatura['ctf_fatura']['parcelas'])){ // Existem parcelas?
+					foreach($cardFatura['ctf_fatura']['parcelas'] as $KeyParcela => $ViewParcela){ // Vamos percorrer todos os itens parcelados
 
-						// Calcula quantas parcelas faltam para pagar
-						$ParcelasRestantes = $ViewParcela['pacelaTotal'] - $ViewParcela['parcelaAtual'];
-						// Paga a parcela
-						$LiquidaError += $this -> setExtrato(
-							$ViewParcela['item'],
-							((-1) * $ViewParcela['valor'] * $ParcelasRestantes),
-						) ? 0 : 1;
-						// Informa que a parcela foi paga
-						$LiquidaError += $this -> CartoesAnteciparParcela( // faturaID, parcelaID, parcelaAtual
-							$cardFatura['ctf_id'],
-							$KeyParcela,
-							$ViewParcela['pacelaTotal']
-						) ? 0 : 1;	
+						// Vamos verificar se existem parcelas em aberto
+						if($ViewParcela['parcelaAtual'] < $ViewParcela['pacelaTotal']){
+
+							// Calcula quantas parcelas faltam para pagar
+							$ParcelasRestantes = $ViewParcela['pacelaTotal'] - $ViewParcela['parcelaAtual'];
+							// Paga a parcela
+							$LiquidaError += $this -> setExtrato(
+								$ViewParcela['item'],
+								((-1) * $ViewParcela['valor'] * $ParcelasRestantes),
+							) ? 0 : 1;
+							// Informa que a parcela foi paga
+							$LiquidaError += $this -> CartoesAnteciparParcela( // faturaID, parcelaID, parcelaAtual
+								$cardFatura['ctf_id'],
+								$KeyParcela,
+								$ViewParcela['pacelaTotal']
+							) ? 0 : 1;	
+						}
 					}
 				}
 			}

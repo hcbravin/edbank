@@ -348,8 +348,8 @@ function Button($Tipo='save',$Badge=false,$ButtonID=NULL){
 	$ButtonID = (strlen($ButtonID))?$ButtonID:NULL;
 
 	switch($Tipo){
-		case 'save': return '<button type="submit" id="'.$ButtonID.'" class="btn btn-sm btn-success w-px-150">'.$BadgeButton.'<i class="fa fa-save me-1"></i> SALVAR</button>'; break;
-		case 'save-b': return '<button type="button" id="'.$ButtonID.'" class="btn btn-sm btn-success w-px-150">'.$BadgeButton.'<i class="fa fa-save me-1"></i> SALVAR</button>'; break;
+		case 'save': return '<button type="submit" id="'.$ButtonID.'" class="btn btn-sm btn-success w-px-150">'.$BadgeButton.'<i class="bi bi-floppy-fill me-1"></i> SALVAR</button>'; break;
+		case 'save-b': return '<button type="button" id="'.$ButtonID.'" class="btn btn-sm btn-success w-px-150">'.$BadgeButton.'<i class="fa fa-floppy-fill me-1"></i> SALVAR</button>'; break;
 		case 'upload': return '<button type="submit" id="'.$ButtonID.'" class="btn btn-sm btn-success w-px-150">'.$BadgeButton.'<i class="fa fa-upload me-1"></i> ENVIAR</button>'; break;
 		case 'upload-b': return '<button type="button" id="'.$ButtonID.'" class="btn btn-sm btn-success w-px-150">'.$BadgeButton.'<i class="fa fa-upload me-1"></i> ENVIAR</button>'; break;
 		default: return false;

@@ -126,6 +126,41 @@ if($URI[1] == 'conta'){ // Operações relacionadas às contas
 
 goto JsonErro;}
 
+if($URI[1] == 'usuario'){
+
+    if($URI[2] == 'buscar'){
+
+        if($URI[3] == 'email'){
+
+            $Emails = array_map("trim", explode(',', $_POST['emails']));
+            $Emails = filter_var_array($Emails, FILTER_VALIDATE_EMAIL);
+            $Emails = array_filter($Emails);
+
+            $Localizados = [];
+
+            if(count($Emails)){ // Se houver emails validos, vamos procurar eles no banco
+                $User = new Usuario();
+                $User -> email = $Emails;
+                $Localizados = $User->findEmail();
+
+                if (!empty($Localizados) && !is_array(reset($Localizados))) {
+                    $Localizados = [$Localizados];
+                }
+
+                $Localizados = array_map(
+                    fn($row) => array_intersect_key($row, array_flip(['user_id','user_nome','user_email'])),
+                    $Localizados
+                );
+            }
+
+            print json_encode(['status'=>'success','data'=> $Localizados]);
+
+        goto Fim;}
+
+    }
+
+goto JsonErro;}
+
 JsonTeste:
     print json_encode(['status'=>'teste','data'=>$URI]); goto Fim;
 

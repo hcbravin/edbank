@@ -691,6 +691,10 @@ $(function () {
             $(this).closest('tr.iPendenciasConta').find('input[type="checkbox"]').attr('checked',true);
             $('#gerenciaPendenciasSend').trigger('click');
         });
+
+        $('button#gerenciaPendenciasCheckAll').click(function(){
+            $('#'+gerPendenciasContasID).find('input[type="checkbox"]').attr('checked',true);
+        });
     }
 
     $(document).on('click', 'button.simpleDatatablesExport', function(){

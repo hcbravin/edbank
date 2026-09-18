@@ -7,7 +7,11 @@
         </div>
 
         <div class="col-12 mb-2 text-end">
-            <?= Button('save', false, 'gerenciaPendenciasSend'); ?>
+            <div class="d-flex justify-content-between">
+                <button type="button" id="gerenciaPendenciasCheckAll" class="btn btn-warning btn-sm"><i class="bi bi-check me-1"></i> Marcar Todos</button>
+                <?= Button('save', false, 'gerenciaPendenciasSend'); ?>
+            </div>
+            
             <input type="hidden" name="agencia" value="<?= $URI[1]; ?>">
             <?= Token(); ?>
         </div>

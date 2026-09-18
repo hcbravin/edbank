@@ -116,6 +116,12 @@
 
     goto Fim;}
 
+    if($URI[2]=='subgerentes'){
+        $Subgerentes = $Agencia -> getSubgerentes();
+        require_once Views.'/gerencia/subgerentes.php';
+        require_once Modal.'/subGerentes.php';
+    goto Fim;}
+
     if($URI[2]=='pendencias'){ // Pendências da agência
         $Contas = $Agencia -> getContas();
         require_once Views.'/gerencia/pendencias.php';
@@ -155,6 +161,12 @@
         if(!$URI[3]){
             require_once Views.'/gerencia/ranking.php';
         }
+
+        // Ranking Saldo
+        if($URI[3]=='saldo'){
+            $Chart = $Agencia -> Chart('saldo');
+            require_once Views.'/gerencia/ranking_saldo.php';
+        goto Fim;}
 
         // Ranking de Transacoes
         if($URI[3]=='transacoes'){
