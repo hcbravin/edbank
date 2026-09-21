@@ -122,6 +122,13 @@
         require_once Modal.'/subGerentes.php';
     goto Fim;}
 
+    if($URI[2]=='cartoes'){
+        // Busca todas as contas da agência
+        $Contas = $Agencia -> getContas();
+        $TokenGet = Token('get');
+        require_once Views .'/gerencia/cartoes.php';
+    goto Fim;}
+
     if($URI[2]=='pendencias'){ // Pendências da agência
         $Contas = $Agencia -> getContas();
         require_once Views.'/gerencia/pendencias.php';

@@ -1794,7 +1794,22 @@ class Conta
 	public function CartoesTipo($Tipo = false)
 	{
 		$Cartoes = [
-			[
+			[ // Debito
+				'id' => 0,
+				'tipo' => 'Débito',
+				'color' => 'purple',
+				'anuidade' => 0, // Reais
+				'anuidadeDesconto' => 0, // Meses
+				'anuidadeIsento' => 0,
+				'jurosRotativo' => 0, // % ao período
+				'jurosSaque' => 0, // % ao periodo
+				'beneficios' => [
+					'Sem limite de saques.',
+					'Cartão virtual',
+				],
+				'limite' => 0
+			],
+			[ // Classic
 				'id' => 1,
 				'tipo' => 'Classic',
 				'color' => 'primary',
@@ -1810,7 +1825,7 @@ class Conta
 				],
 				'limite' => 1
 			],
-			[
+			[ // Gold
 				'id' => 2,
 				'tipo' => 'Gold',
 				'color' => 'warning',
@@ -1827,7 +1842,7 @@ class Conta
 				],
 				'limite' => 2.5
 			],
-			[
+			[ // Platinum
 				'id' => 3,
 				'tipo' => 'Platinum',
 				'color' => 'dark',
@@ -1852,7 +1867,7 @@ class Conta
 			$Cartoes = ReKey($Cartoes, 'id');
 		}
 
-		return $Tipo == false ? $Cartoes : $Cartoes[$Tipo];
+		return $Tipo === false ? $Cartoes : $Cartoes[$Tipo];
 	}
 	private function CartoesGerarNumero(): array
 	{

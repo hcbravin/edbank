@@ -6,6 +6,12 @@ session_start();
 // Carrega as configurações e dependências do aplicativo
 require_once __DIR__ . '/src/AppLoading.php';
 
+// Se houver uma solicitação para geração de pdf redireciona o fluxo
+if($URI[0] === 'pdf'){
+    require_once Controller . '/pdf.php';
+    goto CloseAPP;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -175,3 +181,4 @@ require_once __DIR__ . '/src/AppLoading.php';
     <script src="/js/LearnJSReady.js?<?= fileatime(PublicHTML . '/js/LearnJSReady.js'); ?>" type="text/javascript"></script>
 </body>
 </html>
+<?php CloseAPP: ?>

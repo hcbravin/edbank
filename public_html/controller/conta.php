@@ -85,7 +85,7 @@
             // Abre a página de faturas do cartão de crédito
             $ViewC = $fConta['cartoes'][$URI[3]]; // Busca o cartão na conta
             
-            $ViewCBar = 100 * (max(0,$ViewC['card_limite_livre']) / $ViewC['card_limite']); // Compara o valor atual livre com zero e calcula a porcentagem
+            $ViewCBar = 100 * ( $ViewC['card_limite'] == 0 ? $ViewC['card_limite'] : (max(0,$ViewC['card_limite_livre']) / $ViewC['card_limite'])); // Compara o valor atual livre com zero e calcula a porcentagem
             $ViewCBar = ($ViewCBar > 100 ? 100 : $ViewCBar); // Associa a barra do cartão
 
             $Conta -> cardID = $URI[3]; // Informa qual cartão de crédito está sendo trabalhado

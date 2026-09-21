@@ -56,7 +56,7 @@
                                         <div>
                                             <i class="bi bi-cpu fs-1 opacity-75"></i>
                                         </div>
-                                        <div class="text-end">
+                                        <div class="text-end align-self-center">
                                             <i class="bi bi-shield-check fs-4 me-2 opacity-75"></i>
                                             <span class="badge bg-light text-primary">VISA</span>
                                         </div>
@@ -76,7 +76,7 @@
                                     <!-- Nome e Validade -->
                                     <div class="row">
                                         <div class="col-8">
-                                            <small class="opacity-75 d-block">Nome no Cartão</small>
+                                            <small class="opacity-75 d-block">Titular</small>
                                             <h5 class="mb-0 text-uppercase"><?= $MS['user_nome']; ?></h5>
                                         </div>
                                         <div class="col-4 text-end">
@@ -91,7 +91,7 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                            <span>Cartão de Crédito • <?= $ViewC['card_ativo'] ? 'Ativo' : 'Inativo'; ?></span>
+                                            <span>Cartão de <?= $ViewC['card_tipo'] == 0 ? 'Débito' : 'Crédito' ?> <span class="mx-1">•</span> <?= $ViewC['card_ativo'] ? 'Ativo' : 'Inativo'; ?></span>
                                         </div>
                                         <div>
                                             <small>CVV: ●●●</small>

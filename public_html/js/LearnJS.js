@@ -723,6 +723,63 @@ $(function () {
             });
         }
     });
+
+
+    // Configuração e Edição de Subgerentes das agências
+    $('#ModalSubGerenteSearch').click(function(){
+        var emails = $('#ModalSubGerenteEmail').val();
+
+        $.post('/api.php/usuario/buscar/email', { emails }, function(data){
+
+            if(!typeof data === 'object' && data !== null){
+                data = JSON.parse(data);
+            }
+
+            if(data.status == 'error'){
+                alert(data.msg);
+                return;
+            }
+
+            if(data.status == 'success'){                    
+                $.each(data.data, function(chave, valor){
+                    $('#ModalSubGerenteList').prepend(
+                    `<li class="list-group-item d-flex justify-content-between">
+                        <div class="align-self-center">
+                            <input type="hidden" name="subgerente[${valor.user_id}]" value="insert">
+                            ${valor.user_nome.trim()}
+                            <br/>
+                            <small class="ft-10 opacity-50">${valor.user_email.trim()}</small>
+                        </div>
+                        <button class="btn btn-sm btn-danger iTrash align-self-center" type="button">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </li>`);
+
+                });
+                $('#ModalSubGerenteSearch').closest('div.row').find('div.d-none').removeClass('d-none');
+                return;
+            }
+        });
+    });
+
+    // Remove o item da listagem de gerentes
+    $(document).on('click', '#ModalSubGerente button.iTrash', function(){
+        $(this).closest('li.list-group-item').remove();
+    });
+
+    // Configuração da selecao dos elementos dos cartoes para impressao
+    $('#GerenciaCardListGroupSelectAll').click(function(){
+        $('#GerenciaCardListGroup').find('input[type="checkbox"]').attr('checked',true);
+    });
+    $('button.GerenciaCardListGroupPrint').click(function(){
+        $('#GerenciaCardListGroup').find('input[type="checkbox"]').attr('checked',false);
+        $(this).closest('.list-group-item').find('input[type="checkbox"]').attr('checked',true);
+        $('#GerenciaCardListGroupForm').submit();
+    })
+    $('button#GerenciaCardListGroupSubmiter').click(function(){
+        $('#GerenciaCardListGroupForm').submit();
+    })
+
 });
 
 function goTop() { $('html, body').animate({ scrollTop: 0 }, 'fast'); } // Scroll to top of page
