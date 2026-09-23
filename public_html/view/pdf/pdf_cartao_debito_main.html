@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    
+    <style>
+        @page {
+            margin: 15mm 10mm;
+        }
+
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .titulo {
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .tabela-cartoes {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 15px 0;
+            margin-bottom: 25px;
+        }
+
+        .tabela-cartoes td {
+            vertical-align: top;
+            text-align: center;
+            width: 50%;
+        }
+
+        /* ===== CARTÃO (estrutura base) ===== */
+        .cartao {
+            width: 340px;
+            height: 214px;
+            border-radius: 14px;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            font-family: DejaVu Sans, sans-serif;
+            margin: 0 auto;
+        }
+
+        /* Frente - gradiente simulado com background-color */
+        .cartao-frente {
+            background-color: #0b1e33;
+            border: 1px solid #1b3a5c;
+        }
+
+        /* Faixa superior mais clara (simula gradiente) */
+        .frente-faixa-topo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 340px;
+            height: 100px;
+            background-color: #1b3a5c;
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+        }
+
+        /* Verso */
+        .cartao-verso {
+            background-color: #0b1e33;
+            border: 1px solid #1b3a5c;
+        }
+
+        /* Conteúdo frente */
+        .frente-conteudo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 340px;
+            height: 214px;
+            padding: 0px;
+        }
+
+        .logo-edbank {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d4af37;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .logo-edbank small {
+            font-size: 10px;
+            color: #cccccc;
+            font-weight: normal;
+            margin-right: 150px;
+        }
+
+        .bandeira {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            font-size: 16px;
+            font-weight: bold;
+            /* color: #ffffff; */
+            background-color: #fff;
+            padding: 5px 5px;
+            border-radius: 3px;
+            color: #0b1e33;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* Chip dourado */
+        .chip {
+            position: absolute;
+            top: 80px;
+            left: 18px;
+            width: 42px;
+            height: 32px;
+            background-color: #d4af37;
+            border-radius: 6px;
+            border: 1px solid #a67c00;
+        }
+
+        .chip-interno {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            width: 28px;
+            height: 16px;
+            background-color: #b8860b;
+            border-radius: 3px;
+        }
+
+        .contactless {
+            position: absolute;
+            top: 85px;
+            left: 68px;
+            font-size: 14px;
+            color: #ffffff;
+            opacity: 0.85;
+        }
+
+        /* Número do cartão */
+        .numero-cartao {
+            position: absolute;
+            top: 118px;
+            left: 18px;
+            font-size: 17px;
+            letter-spacing: 2px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* Validade e titular */
+        .validade-bloco {
+            position: absolute;
+            
+            bottom: 18px;
+            right: 18px;
+        }
+
+        .titular-bloco {
+            position: absolute;
+            bottom: 18px;
+            left: 18px;
+            text-align: left;
+        }
+
+        .rotulo {
+            font-size: 8px;
+            color: #bbbbbb;
+            letter-spacing: 1px;
+        }
+
+        .valor {
+            font-size: 12px;
+            color: #ffffff;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Linha dourada inferior */
+        .linha-dourada {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 340px;
+            height: 4px;
+            background-color: #d4af37;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
+        }
+
+        /* ===== VERSO ===== */
+        .tarja-magnetica {
+            position: absolute;
+            top: 22px;
+            left: 0;
+            width: 340px;
+            height: 40px;
+            background-color: #111111;
+        }
+
+        .verso-conteudo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 340px;
+            height: 214px;
+        }
+
+        .cvv-area {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            text-align: right;
+        }
+
+        .cvv-rotulo {
+            font-size: 9px;
+            color: #bbbbbb;
+            letter-spacing: 1px;
+        }
+
+        .cvv-box {
+            display: inline-block;
+            background-color: #f8f9fa;
+            color: #111111;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-top: 3px;
+        }
+
+        .texto-legal {
+            position: absolute;
+            top: 140px;
+            left: 18px;
+            width: 305px;
+            font-size: 8px;
+            color: #aaaaaa;
+            line-height: 1.4;
+            text-align: justify;
+        }
+
+        .verso-rodape {
+            position: absolute;
+            bottom: 15px;
+            left: 18px;
+            width: 305px;
+        }
+
+        .verso-logo {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d4af37;
+            letter-spacing: 1px;
+        }
+
+        .verso-site {
+            float: right;
+            font-size: 9px;
+            color: #aaaaaa;
+            margin-top: 4px;
+        }
+
+        .qrCode {
+            position: absolute;
+            top: 15px;
+            left: 18px;
+            width: 120px;
+            height: 120px;
+            z-index: 1;
+
+        }
+
+        table.header {
+            width: 100%;
+        }
+
+        table.header td {
+            width: 50%;
+        }
+
+        .edbank-header {
+            padding: 5px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        .edbank-subtitle {
+            font-size: 9pt;
+            margin-bottom: 25px;
+            margin-left: 5px;
+        }
+
+    </style>
+</head>
+
+<body>
+    
+    <div class="edbank-header">
+        <table class="header">
+            <tr>
+                <td><strong>EDUCATIONAL BANK</strong></td>
+                <td style="text-align: right;">
+                    {agencia}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="edbank-subtitle">
+        <table class="header">
+            <tr>
+                <td>GERADO EM {datahora}</td>
+                <td style="text-align: right;">
+                    {gerente}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {body}
+</body>
+
+</html>

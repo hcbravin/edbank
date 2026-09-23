@@ -392,6 +392,28 @@ function Alert($texto,$color=false,$reduce=false){
 	print $Content;
 	return;
 }
+function AbreviarNome(string $nome): string
+{
+    // Normaliza espaços extras e separa as palavras
+    $partes = preg_split('/\s+/', trim($nome));
+
+    // Se tiver 0, 1 ou 2 palavras, retorna como está (nada a abreviar)
+    if (count($partes) <= 2) {
+        return implode(' ', $partes);
+    }
+
+    $primeiro = array_shift($partes); // HENRIQUE
+    $ultimo   = array_pop($partes);   // BRAVIN
+    $meio     = $partes;              // ['CASAGRANDE']
+
+    // Abrevia cada palavra do meio pegando só a primeira letra
+    $meioAbreviado = array_map(
+        fn($palavra) => mb_strtoupper(mb_substr($palavra, 0, 1, 'UTF-8'), 'UTF-8'),
+        $meio
+    );
+
+    return implode(' ', array_merge([$primeiro], $meioAbreviado, [$ultimo]));
+}
 function Calendario($MES=false,$Saida=false){
 	global $ANOBASE;
 	$MES = (is_numeric($MES))?$MES:date('m');

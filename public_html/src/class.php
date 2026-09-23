@@ -1871,22 +1871,67 @@ class Conta
 	}
 	private function CartoesGerarNumero(): array
 	{
-		$bin = '4539'; // Codigo da operadora do cartão -> Visa Like
+		$bin   = '4539'; // Visa Like
 		$corpo = '';
 
+		// Gera os primeiros 11 dígitos aleatórios (BIN + 11 = 15 dígitos)
 		for ($i = 0; $i < 11; $i++) {
 			$corpo .= random_int(0, 9);
 		}
 
-		$numero = $bin . $corpo;
+		$numeroParcial = $bin . $corpo;
+
+		// Calcula o dígito verificador (Luhn)
+		$digito = $this->calcularLuhn($numeroParcial);
+
+		$numero = $numeroParcial . $digito;
 		$last4  = substr($numero, -4);
 
 		return [
-			'token' => bin2hex(random_bytes(16)), // 32 chars
+			'token'  => bin2hex(random_bytes(16)),
 			'numero' => $numero,
-			'last4'  => $last4
+			'last4'  => $last4,
 		];
 	}
+	private function calcularLuhn(string $numero): int
+	{
+		$soma   = 0;
+		$digitos = str_split(strrev($numero)); // inverte para processar da direita
+
+		foreach ($digitos as $i => $digito) {
+			$valor = (int) $digito;
+
+			// Multiplica por 2 os dígitos em posições ímpares (0-indexado)
+			if ($i % 2 === 0) {
+				$valor *= 2;
+				if ($valor > 9) {
+					$valor -= 9; // equivalente a somar os dois dígitos
+				}
+			}
+
+			$soma += $valor;
+		}
+
+		return (10 - ($soma % 10)) % 10;
+	}
+	// private function CartoesGerarNumero(): array
+	// {
+	// 	$bin = '4539'; // Codigo da operadora do cartão -> Visa Like
+	// 	$corpo = '';
+
+	// 	for ($i = 0; $i < 11; $i++) {
+	// 		$corpo .= random_int(0, 9);
+	// 	}
+
+	// 	$numero = $bin . $corpo;
+	// 	$last4  = substr($numero, -4);
+
+	// 	return [
+	// 		'token' => bin2hex(random_bytes(16)), // 32 chars
+	// 		'numero' => $numero,
+	// 		'last4'  => $last4
+	// 	];
+	// }
 	public function Cartoes()
 	{ // Busca os cartoes da Conta
 		global $db;
@@ -1916,6 +1961,29 @@ class Conta
 		$Cartoes = $this->Cartoes();
 		if (!isset($Cartoes[$this->cardID])) return false;
 		return $Cartoes[$this->cardID];
+	}
+	public function getCartaoDebito(bool $Criar = false): array {
+		// Criar caso não exista: false;
+
+		$Cartoes =  array_filter(
+            $this -> Cartoes(),
+            function($filterCard){
+                return $filterCard['card_tipo'] == 0;
+            }
+        );
+
+		if (count($Cartoes)) {
+			return reset($Cartoes);
+		}
+
+		if($Criar) {
+			if($this->CartoesNovo(0)){
+				return $this->getCartaoDebito(false);
+
+			}
+		}
+
+		return [];
 	}
 	public function CartoesNovo($Tipo)
 	{ // Associa um novo cartão a conta
