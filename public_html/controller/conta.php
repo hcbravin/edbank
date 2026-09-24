@@ -64,9 +64,11 @@
             // Abre a página de gerenciamento dos cartoes da conta
             $CartoesTipoFirsKey = array_keys($fConta['cartoes']); $CartoesTipoFirsKey = (isset($CartoesTipoFirsKey[0]) ? $CartoesTipoFirsKey[0] : false);
             $CartoesAtivos = count($fConta['cartoes']);
+            $CartaoVirtual = false;
             
             require_once Views . '/conta/conta_cartoes.php';
             require_once Modal . '/cartoesPagar.php';
+            require_once Modal . '/cartoesVirtual.php';
         }
         
         if($URI[3] == 'novo'){
@@ -77,6 +79,7 @@
         }
 
         if(is_numeric($URI[3]) AND $URI[4] == 'faturas'){
+
             if(!array_key_exists($URI[3],$fConta['cartoes'])){
                 Alert('O cartão que você está tentando acessar não foi encontrado!');
                 goto Fim;

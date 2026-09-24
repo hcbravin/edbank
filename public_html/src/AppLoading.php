@@ -24,7 +24,8 @@ require_once Src . '/functions.php';
 require_once Src . '/class.php';
 
 use Detection\MobileDetect;
-$Mobile = new MobileDetect() -> isMobile();
+$MobileDetect = new MobileDetect();
+$Mobile = $MobileDetect -> isMobile();
 
 $URI = explode('/', substr(parse_url(@$_SERVER['REQUEST_URI'], PHP_URL_PATH), 1));
 URINull(5); // Garante que existam 5 índices na array URI
@@ -33,3 +34,5 @@ TokenGetVerificar(); // Verifica se o token foi passado na URL
 $MS = $_SESSION; // Variável global de sessão do sistema
 $AnoAtual = date('Y'); // Ano atual
 $Logado = Logado(); // Verifica se o usuário está logado
+
+

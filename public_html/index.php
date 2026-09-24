@@ -20,7 +20,7 @@ if($URI[0] === 'pdf'){
 <head>
     <?php require_once PublicHTML . '/src/header.php'; // Carrega o Header da Página 
     ?>
-</head>
+ </head>
 
 <body class="d-flex flex-column min-vh-100">
 

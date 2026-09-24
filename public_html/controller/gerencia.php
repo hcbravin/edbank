@@ -129,6 +129,11 @@
         require_once Views .'/gerencia/cartoes.php';
     goto Fim;}
 
+    if($URI[2]=='pic-to-pay'){
+        require_once Views . '/gerencia/pic-to-pay.php';
+        require_once Modal . '/picToPay.php';
+    goto Fim;}
+
     if($URI[2]=='pendencias'){ // Pendências da agência
         $Contas = $Agencia -> getContas();
         require_once Views.'/gerencia/pendencias.php';

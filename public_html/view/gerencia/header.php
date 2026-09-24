@@ -32,12 +32,14 @@
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/contas"><i class="bi bi-people me-1"></i> Contas</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/cartoes"><i class="bi bi-credit-card-fill me-1"></i> Cartões</a></li>
-                
+                <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/pic-to-pay"><i class="bi bi-paypal me-1"></i> Pic to Pay</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/subgerentes"><i class="bi bi-person-lines-fill me-1"></i> Subgerentes</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/ranking"><i class="bi bi-bar-chart-line-fill me-1"></i> Rankings</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/pendencias"><i class="bi bi-clock me-1"></i> Pendências</a></li>
                 <li><a class="dropdown-item" href="/gerencia/<?= $URI[1]; ?>/configuracoes"><i class="bi bi-gear me-1"></i> Configurações</a></li>
-                
                 <li>
                     <hr class="dropdown-divider">
                 </li>
@@ -77,6 +79,7 @@
                 case 'fechar': print '<i class="bi bi-building-fill-lock me-1"></i> Fechar Agência'; break;
                 case 'subgerentes': print '<i class="bi bi-person-lines-fill me-1"></i> Subgerentes'; break;
                 case 'cartoes': print '<i class="bi bi-credit-card-fill me-1"></i> Cartões'; break;
+                case 'pic-to-pay': print '<i class="bi bi-paypal me-1"></i> Pic to Pay'; break;
                 default: print 'Erro.';
             } ?>
             <?php switch($URI[4]){

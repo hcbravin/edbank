@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e036920759a0c1ee49d79404e1738678",
+    "content-hash": "694b032fc252dd0ba0b8a03137350c22",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1060,6 +1060,94 @@
             "time": "2021-10-29T13:26:27+00:00"
         },
         {
+            "name": "publishpress/dompdf-dompdf",
+            "version": "3.1.6.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/publishpress/library-dompdf-dompdf.git",
+                "reference": "05a7380b4ac81c36f55c2047a3a1cbec46aef2d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/publishpress/library-dompdf-dompdf/zipball/05a7380b4ac81c36f55c2047a3a1cbec46aef2d8",
+                "reference": "05a7380b4ac81c36f55c2047a3a1cbec46aef2d8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-mbstring": "*",
+                "php": ">=7.4.0"
+            },
+            "require-dev": {
+                "brianhenryie/strauss": "0.29.2",
+                "dompdf/dompdf": "3.1.6",
+                "publishpress/dev-workspace": "^1.8",
+                "publishpress/version-loader-generator": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "strauss": {
+                    "packages": [
+                        "dompdf/dompdf",
+                        "dompdf/php-font-lib",
+                        "dompdf/php-svg-lib",
+                        "masterminds/html5",
+                        "sabberworm/php-css-parser"
+                    ],
+                    "include_author": true,
+                    "classmap_output": true,
+                    "classmap_prefix": "PublishPress_",
+                    "constant_prefix": "PUBLISHPRESS_",
+                    "namespace_prefix": "PublishPress\\",
+                    "target_directory": "lib",
+                    "delete_vendor_files": true,
+                    "delete_vendor_packages": true
+                },
+                "generator": {
+                    "lib-class-test": "class_exists('PublishPress\\Dompdf\\Dompdf', false)",
+                    "action-register-priority": "-200",
+                    "action-initialize-priority": "-185"
+                },
+                "plugin-name": "library-dompdf-dompdf",
+                "plugin-slug": "library-dompdf-dompdf",
+                "plugin-folder": "library-dompdf-dompdf",
+                "plugin-github-repo": "publishpress/library-dompdf-dompdf",
+                "plugin-lang-domain": "dompdf-dompdf",
+                "plugin-composer-package": "publishpress/dompdf-dompdf"
+            },
+            "autoload": {
+                "files": [
+                    "lib/include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "The Dompdf Community",
+                    "homepage": "https://github.com/dompdf/dompdf/blob/master/AUTHORS.md"
+                },
+                {
+                    "name": "PublishPress",
+                    "email": "help@publishpress.com"
+                }
+            ],
+            "description": "Dompdf and its runtime dependencies, prefixed for PublishPress",
+            "homepage": "https://github.com/dompdf/dompdf",
+            "keywords": [
+                "dompdf",
+                "pdf",
+                "publishpress"
+            ],
+            "support": {
+                "issues": "https://github.com/publishpress/library-dompdf-dompdf/issues",
+                "source": "https://github.com/publishpress/library-dompdf-dompdf/tree/3.1.6.3"
+            },
+            "time": "2026-09-21T18:23:24+00:00"
+        },
+        {
             "name": "sabberworm/php-css-parser",
             "version": "v9.1.0",
             "source": {
@@ -1384,6 +1472,50 @@
                 }
             ],
             "time": "2026-04-10T16:19:22+00:00"
+        },
+        {
+            "name": "tekintian/phpqrcode",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tekintian/phpqrcode.git",
+                "reference": "8bc8c1189981a5dbd0d7a50fd6db4899834beff9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tekintian/phpqrcode/zipball/8bc8c1189981a5dbd0d7a50fd6db4899834beff9",
+                "reference": "8bc8c1189981a5dbd0d7a50fd6db4899834beff9",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3|^7.0|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "tekintian\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "支持PHP5.3至php8.2的 qrcode 二维码工具类 改进版本，支持自定义LOGO，自定义输出目录和自定义返回类型 图片，base64图片数据, 二维码图片自定义，静态方法调用，方便快捷，高效，简洁的PHP二维码生成工具",
+            "homepage": "https://github.com/tekintian/phpqrcode",
+            "keywords": [
+                "PHP二维码",
+                "php qrcode with logo",
+                "phpqrcode",
+                "qrcode",
+                "tiny qrcode",
+                "二维码工具"
+            ],
+            "support": {
+                "forum": "https://github.com/tekintian/phpqrcode",
+                "issues": "https://github.com/tekintian/phpqrcode/issues",
+                "source": "https://github.com/tekintian/phpqrcode"
+            },
+            "time": "2023-11-06T12:08:32+00:00"
         },
         {
             "name": "thecodingmachine/safe",

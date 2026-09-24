@@ -30,6 +30,29 @@ if($URI[1]=='agencia'){ // Operações relacionadas às agências
         exit;
     }
 
+    // URI[2] -> Número da agência
+    if(is_numeric($URI[2])){
+
+        // Busca agência
+        $Agencia = new Agencia($URI[2]);
+        $getAgencia = $Agencia -> getAgencia();
+
+        if(is_array($getAgencia) AND array_key_exists('ag_id', $getAgencia)){
+
+            // Sistema picToPay
+            if($URI[3] == 'picToPay'){
+            
+                print json_encode(['status'=>'success', 'post' => $_POST]);
+
+            goto Fim;}
+
+        
+        } else {
+            print json_encode(['status'=>'error','message'=>'Agência não encontrada.']);
+
+        goto Fim;}
+    }
+
 goto JsonErro;}
 
 if($URI[1] == 'conta'){ // Operações relacionadas às contas

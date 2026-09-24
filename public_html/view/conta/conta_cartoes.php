@@ -102,11 +102,27 @@
 
                             <!-- Informações Financeiras -->
                             <div class="row g-3 mb-4">
+
+                                <?php if($ViewC['card_tipo'] == 0){ $CartaoVirtual = $ViewC; ?>
+                                <div class="col-12 col-sm-6">
+                                    <div class="card h-100 border-primary VirtualCardOpen">
+                                        <div class="card-body p-1 px-2 mpoint">
+                                            <span class="badge text-bg-success">ABRIR</span>
+                                            <div class="text-center">
+                                                <i class="bi bi-credit-card-2-front-fill ft-30"></i>
+                                                <br/>
+                                                Cartão Virtual
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php } ?>
+
                                 <!-- Limite Disponível -->
                                 <div class="col-12 col-sm-6">
                                     <div class="card h-100 border-primary">
                                         <div class="card-body">
-                                            <div class="d-flex align-items-start mb-3">
+                                            <div class="d-flex align-items-start mb-3 align-self-center">
                                                 <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3 text-center square-40">
                                                     <i class="bi bi-wallet2 text-primary"></i>
                                                 </div>
@@ -116,7 +132,7 @@
                                                 </div>
                                             </div>
                                             <div class="progress" style="height: 6px;">
-                                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= (100 * $ViewC['card_limite_livre'] / $ViewC['card_limite']); ?>%;"></div>
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= $ViewC['card_limite'] == 0 ? 0 : (100 * $ViewC['card_limite_livre'] / $ViewC['card_limite']); ?>%;"></div>
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <small>Limite Total</small>

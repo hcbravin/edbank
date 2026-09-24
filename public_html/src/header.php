@@ -13,6 +13,7 @@
 <script src="/js/qrcode.min.js"></script>
 <script src="/js/simple-datatables.js"></script>
 <script src="/js/LearnJS.js?<?= fileatime(PublicHTML . '/js/LearnJS.js'); ?>"></script>
+<script src="/js/LearnJSViewport.js?<?= fileatime(PublicHTML . '/js/LearnJSViewport.js'); ?>" defer></script>
 <!-- Styles --> 
 <link href="/css/bootstrap.min.css" rel="stylesheet">
 <link href="/css/bootstrap-icons.min.css" rel="stylesheet">
