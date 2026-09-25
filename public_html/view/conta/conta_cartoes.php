@@ -49,7 +49,7 @@
                             </div>
 
                             <!-- Visual do Cartão -->
-                            <div class="card border-0 shadow-lg mb-4 text-bg-<?= $ViewC['card_tipo_color']; ?>">
+                            <div class="d-none card border-0 shadow-lg mb-4 text-bg-<?= $ViewC['card_tipo_color']; ?>">
                                 <div class="card-body p-4">
                                     <!-- Chip e Bandeira -->
                                     <div class="d-flex justify-content-between align-items-start mb-4">
@@ -100,12 +100,17 @@
                                 </div>
                             </div>
 
+                            <div class="d-flex justify-content-center">
+                                <?= $Conta -> CartaoRender(array_merge($ViewC, ['card_titular' => $fConta['user_nome']])); ?>
+
+                            </div>
+
                             <!-- Informações Financeiras -->
-                            <div class="row g-3 mb-4">
+                            <div class="row g-3 mb-4 mt-1">
 
                                 <?php if($ViewC['card_tipo'] == 0){ $CartaoVirtual = $ViewC; ?>
                                 <div class="col-12 col-sm-6">
-                                    <div class="card h-100 border-primary VirtualCardOpen">
+                                    <div class="card h-100 border-primary VirtualCardOpen" data-bs-target="#ModalCardVirtual" data-bs-toggle="modal">
                                         <div class="card-body p-1 px-2 mpoint">
                                             <span class="badge text-bg-success">ABRIR</span>
                                             <div class="text-center">

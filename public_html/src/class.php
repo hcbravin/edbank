@@ -1914,24 +1914,6 @@ class Conta
 
 		return (10 - ($soma % 10)) % 10;
 	}
-	// private function CartoesGerarNumero(): array
-	// {
-	// 	$bin = '4539'; // Codigo da operadora do cartão -> Visa Like
-	// 	$corpo = '';
-
-	// 	for ($i = 0; $i < 11; $i++) {
-	// 		$corpo .= random_int(0, 9);
-	// 	}
-
-	// 	$numero = $bin . $corpo;
-	// 	$last4  = substr($numero, -4);
-
-	// 	return [
-	// 		'token' => bin2hex(random_bytes(16)), // 32 chars
-	// 		'numero' => $numero,
-	// 		'last4'  => $last4
-	// 	];
-	// }
 	public function Cartoes()
 	{ // Busca os cartoes da Conta
 		global $db;
@@ -1955,6 +1937,23 @@ class Conta
 			}
 		}
 		return $Cartoes;
+	}
+	public function CartaoRender(array $Cartao): string {
+
+		// Altera a forma de exibição dos números e do nome
+		$Cartao['card_numero'] = chunk_split($Cartao['card_numero'], 4, ' ');
+		$Cartao['card_titular'] = AbreviarNome(mb_strtoupper($Cartao['card_titular'], 'UTF-8'));
+		$Cartao['card_validade'] = date('m/y', strtotime($Cartao['card_validade']));
+		$Cartao['card_tipo_color'] = (!isset($Cartao['card_tipo_color']) or $Cartao['card_tipo_color'] == '') ? 'dark' : $Cartao['card_tipo_color'];
+
+		$Html = file_get_contents(Views . '/html/cartao_frente.html');
+		$Html = str_replace(
+			array_map(fn($key) => '{' . $key . '}', array_keys($Cartao)),
+			array_values($Cartao),
+			$Html
+		);
+
+		return $Html;
 	}
 	public function getCartao()
 	{

@@ -36,3 +36,4 @@ $AnoAtual = date('Y'); // Ano atual
 $Logado = Logado(); // Verifica se o usuário está logado
 
 
+// Gerador de qrCode

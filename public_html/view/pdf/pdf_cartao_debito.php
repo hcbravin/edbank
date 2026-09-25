@@ -1,4 +1,11 @@
 <?php
+
+// Alias de uso para geração do qrCode
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use chillerlan\QRCode\Output\QRGdImagePNG;
+
+
 // Valida os numeros informados.
 if(!isset($_POST['cartoes']) OR !is_array($_POST['cartoes']) OR count($_POST['cartoes']) == 0) { 
     Alert('Nenhum cartão foi selecionado!'); 
@@ -22,6 +29,7 @@ foreach($_POST['cartoes'] as $KeyC=>$ViewC){
 }
 
 // Dados
+$Dados['TituloPage'] = 'Cartão de Débito EDBank';
 $Dados = array_merge($Dados, [
     'datahora' => date('d/m/Y H:i:s'),
     'gerente'  => $MS['user_nome'],
@@ -47,7 +55,12 @@ foreach($Contas as $KeyC=>$ViewC){
         'cvv'      => '123',
         'bandeira' => 'VISA',
         'tipo'     => 'DÉBITO',
-        'qrCode'   => TekinQR::getQRImg($ViewC['card_debito']['card_numero'], 10, null, 1),
+        // 'qrCode'   => TekinQR::getQRImg($ViewC['card_debito']['card_numero'], 10, null, 1),
+        'qrCode' => (new QRCode(new QROptions([
+                'outputInterface' => QRGdImagePNG::class,
+                'outputBase64' => true,
+                'scale' => 10,
+            ]))) -> render($ViewC['card_debito']['card_numero']),
     ];
 
     $Dados['body'] .= str_replace(
@@ -55,5 +68,4 @@ foreach($Contas as $KeyC=>$ViewC){
         array_values($CardDados),
         $Card
     );
-
 }

@@ -1648,6 +1648,11 @@ label {
 	color: #FFF !important;
 }
 
+.text-bg-purple {
+	background-color: var(--purple) !important;
+	color: #fff !important;
+}
+
 /* SWITCH BGs */
 .switch-frequencia:checked {
 	background-color: var(--bs-success) !important;

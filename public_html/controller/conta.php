@@ -1,4 +1,8 @@
 <?php
+    // Alias de uso para geração do qrCode
+    use chillerlan\QRCode\QRCode;
+    use chillerlan\QRCode\QROptions;
+    use chillerlan\QRCode\Output\QRGdImagePNG;
 
     // Verifica se a conta passada na URL existe e pertence ao usuário logado
     if($URI[0]!='conta' OR !is_numeric($URI[1]) OR !isset($MS['contas'][$URI[1]])){
@@ -65,6 +69,14 @@
             $CartoesTipoFirsKey = array_keys($fConta['cartoes']); $CartoesTipoFirsKey = (isset($CartoesTipoFirsKey[0]) ? $CartoesTipoFirsKey[0] : false);
             $CartoesAtivos = count($fConta['cartoes']);
             $CartaoVirtual = false;
+
+            // Gera o qrCode com base na imagem;
+
+            $qrCode = (new QRCode(new QROptions([
+                'outputInterface' => QRGdImagePNG::class,
+                'outputBase64' => true,
+                'scale' => 10,
+            ])));
             
             require_once Views . '/conta/conta_cartoes.php';
             require_once Modal . '/cartoesPagar.php';
