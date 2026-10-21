@@ -614,22 +614,24 @@ class Usuario
 			return [];
 		}
 		$Base = $db->prepare("SELECT 
-			a.ag_id,
-			a.ag_num,
-			a.ag_user,
-			a.ag_info,
-			a.ag_cep,
-			a.ag_key,
-			a.ag_fim,
-			a.ag_dref,
-			GREATEST(0, DATEDIFF(a.ag_fim, NOW())) as ag_dias,
-			COUNT(c.ct_id) AS total_contas
-		FROM  agencia a
-		LEFT JOIN contas c ON a.ag_id = c.ct_agencia
-		WHERE  a.ag_user = ?
-		GROUP BY  a.ag_id, a.ag_num, a.ag_user, a.ag_cep, a.ag_key, a.ag_dref, ag_dias, a.ag_fim
-		ORDER BY a.ag_num ASC");
-		$Base->bind_param("i", $this->id);
+			ag_id,
+			ag_num,
+			ag_user,
+			ag_info,
+			ag_cep,
+			ag_key,
+			ag_fim,
+			ag_dref,
+			IF(ag_user = ?, 1, 0) as isGerente,
+			GREATEST(0, DATEDIFF(ag_fim, NOW())) as ag_dias,
+			COUNT(ct_id) AS total_contas
+		FROM  agencia
+		LEFT JOIN contas ON (agencia.ag_id = contas.ct_agencia)
+		LEFT JOIN agencia_gerentes ON  (agencia_gerentes.agg_agencia = agencia.ag_id)
+		WHERE  ag_user = ? OR agg_user = ?
+		GROUP BY  ag_id, ag_num, ag_user, ag_cep, ag_key, ag_dref, ag_dias, ag_fim
+		ORDER BY ag_num ASC");
+		$Base->bind_param("iii", $this->id, $this->id, $this->id);
 		if ($Base->execute()) {
 			return ReKey($Base->get_result()->fetch_all(MYSQLI_ASSOC), 'ag_id');
 		}
@@ -675,7 +677,6 @@ class Usuario
 
 	public function updateSession() {}
 }
-
 class Agencia
 {
 	public $numero, $id, $ConfigUpd, $key, $getContas;
@@ -760,6 +761,23 @@ class Agencia
 	{
 		return $this->Agencia;
 	}
+	public function checkConfigTransferencia(int $Out, int $In, bool $PorAgencia = true): bool {
+		global $db;
+		// Out -> Quem está pagando, In -> Quem está recebendo
+		// Irá fazer uma verificação das configurações das duas agências se é permitido a transferência de valores entre elas.
+		// Se PorAgencia for false, a verificação ocorre pelo número das contas.
+		// Se PorAgencia for true, a verificação ocorre pelo ID das agências.
+
+		if($PorAgencia){
+			$ConfigOut = new Agencia($Out) -> getConfig();
+			$ConfigIn  = new Agencia($In) -> getConfig();
+
+
+		}
+
+
+		return true;
+	}
 	public function getConfig()
 	{
 		global $db;
@@ -773,6 +791,7 @@ class Agencia
 			'profissaoMinSalario' => false,
 			'profissaoMaxSalario' => false,
 			'transferenciasTipo' => 0,
+			'gerenteMaxCash' => false,
 			'transferenciasAgencias' => [],
 			'debitos' => [],
 		];
@@ -1443,6 +1462,26 @@ class Agencia
 
 		return $Map;
 	}
+
+	// Cartoes
+	public function getCartaoByNumero(string $Numero): array {
+		global $db;
+
+		try {
+			$Base = $db -> prepare("SELECT ct_user as user_id, cartoes.* FROM cartoes 
+			INNER JOIN contas ON (contas.ct_id = cartoes.card_conta)
+			INNER JOIN agencia ON (agencia.ag_id = contas.ct_agencia)
+			WHERE card_numero = ? AND ag_id = ? LIMIT 1");
+
+			$Base -> bind_param("si", $Numero, $this->id);
+			$Base -> execute();
+			
+			return $Base -> get_result()->fetch_assoc();
+
+		}catch (Exception $e) {
+			return [];
+		}
+	}
 }
 
 class Conta
@@ -1547,7 +1586,7 @@ class Conta
 		// Se nenhuma das opções acima for verdadeira, retorna falso
 		return false;
 	}
-	public function setExtrato($Info, $Valor)
+	public function setExtrato(string $Info, float $Valor, string $Chave = ''): bool
 	{
 		global $db;
 
@@ -1556,8 +1595,8 @@ class Conta
 
 		try {
 			// Insere o elemento no extrato da conta.
-			$Base = $db->prepare("INSERT INTO extrato (ext_conta, ext_info, ext_valor) VALUES (?, ?, ?)");
-			$Base->bind_param("isd", $this->contaID, $Info, $Valor);
+			$Base = $db->prepare("INSERT INTO extrato (ext_conta, ext_info, ext_valor, ext_chave) VALUES (?, ?, ?, ?)");
+			$Base->bind_param("isds", $this->contaID, $Info, $Valor, $Chave);
 			$Base->execute();
 			$Base->close();
 
@@ -1601,6 +1640,20 @@ class Conta
 			});
 
 			return array_slice($Extrato, 0, $Maximo);
+		} catch (Throwable $e) {
+			error_log("Erro ao buscar extrato: " . $e->getMessage() . " em " . $e->getFile() . " na linha " . $e->getLine());
+			return false;
+		}
+	}
+	public function getExtratoChave(string $Chave): bool {
+		global $db;
+
+		try {
+			$Base = $db -> prepare("SELECT ext_id FROM extrato WHERE ext_conta = ? AND ext_chave = ? LIMIT 1");
+			$Base -> bind_param("is", $this->contaID, $Chave);
+			$Base -> execute();
+			return boolval($Base -> get_result() -> num_rows);
+			
 		} catch (Throwable $e) {
 			error_log("Erro ao buscar extrato: " . $e->getMessage() . " em " . $e->getFile() . " na linha " . $e->getLine());
 			return false;
@@ -1684,6 +1737,14 @@ class Conta
 		} catch (Throwable $e) {
 			return false;
 		}
+	}
+	public function getSaldo(): float {
+		
+		if(!isset($this->Conta['ct_saldo'])){
+			$this -> findConta();
+		}
+		
+		return $this->Conta['ct_saldo'];
 	}
 
 	// Realiza uma transferência de valor entre contas
@@ -1994,9 +2055,18 @@ class Conta
 		$CartoesTipoInfo = $this->CartoesTipo($Tipo); // Busca informações referente ao tipo de cartão escolhido
 		if (!$CartoesTipoInfo) return false; // Se o tipo de cartão for inválido, retorna falso
 
+		// Verifica se o cartão de débito ja existe
+		if($Tipo == 0){
+			$CartaoDebito = $this -> getCartaoDebito(false);
+			if($CartaoDebito){
+				return false;
+			}
+		}
+
 		$cartao = $this->CartoesGerarNumero(); // Gera um novo cartão
 		$validade = date('Y-m-d', strtotime('+5 years')); // Gera a data de validade do cartão
 		$limite = ($salario ? $salario * $CartoesTipoInfo['limite'] : 1000); // Busca o limite do cartão
+		$limite = ($Tipo == 0 ? 0 : $limite); // Se for um cartão de débito, zera o limite.
 
 		$Base = $db->prepare("INSERT INTO cartoes (card_conta,card_tipo,card_numero,card_validade,card_limite,card_limite_livre,card_token) VALUES (?,?,?,?,?,?,?)");
 		$Base->bind_param("iissdds", $this->contaID, $Tipo, $cartao['numero'], $validade, $limite, $limite, $cartao['token']);

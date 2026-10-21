@@ -15,9 +15,15 @@
                     <li class="list-group-item">Realiza as operações de sorte reves (caso estejam configuradas)</li>
                     <li class="list-group-item">Outras ações</li>
                 </ol>
+                <?php if($MS['gerente'][$URI[1]]['isGerente']){ ?>
                 <div class="text-end mt-2">
                     <button type="button" data-eb-cfm="exe/agencia/ciclo/<?= $URI[1]; ?>/<?= Token('get'); ?>" class="btn btn-sm btn-primary w-px-150"><i class="bi bi-rocket-fill me-1"></i> Executar Ciclo</button>
                 </div>
+                <?php }else{ ?>
+                <div class="infomain bd-1 bd-warning mt-2">
+                    Subgerentes não podem executar os ciclos manualmente.
+                </div>
+                <?php } ?>
             </div>
         </div>
     </div>

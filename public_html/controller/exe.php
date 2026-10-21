@@ -127,7 +127,7 @@ if($URI[1] == 'conta'){ // Operações com contas
     if($URI[2]=='pix'){ // Executa uma nova transferência com pix
 
         if($URI[3] == 'enviar'){ // Envia um pix
-            
+
             $valor = numHTML($P['pixEnviarValor']); // Converte o valor para float
             $Forma = (is_numeric($P['pixEnviarValorForma']) ? $P['pixEnviarValorForma'] : 0); // Verifica a forma de pagamento do pix
             $DestinatarioNome = strip_tags($P['pixEnviarDestinatarioNome']);
@@ -145,6 +145,15 @@ if($URI[1] == 'conta'){ // Operações com contas
             // Verifica se a conta possui saldo suficiente para realizar a transferência
             $Conta -> contaID = $P['conta'];
             $findConta = $Conta -> findConta();
+
+            // Vamos verificar se a configuração da agencia permite pagamento para outras agências
+            // P['conta'] -> conta de quem está enviando o valor
+            // Chave['conta'] -> conta de quem recebe o valor
+
+            
+            ppre($P);
+            ppre($Chave);
+            exit;
 
             // Pagamento com saldo em conta
             if($Forma == 0){
@@ -244,9 +253,7 @@ if($URI[1] == 'conta'){ // Operações com contas
                 Alert('Não foi possivel associar o cartão ao seu perfil!');
             
             }
-
             shdr('conta/' . $P['conta'] . '/cartoes');
-
         goto Status;}
 
         // Busca os cartoes e verifica se o cartão é do usuário para continuar
@@ -530,6 +537,7 @@ if($URI[1]=='agencia'){
     
     // Busca a agência
     $Agencia = new Agencia($AgenciaID);
+    $AgenciaConfig = $Agencia -> getConfig();
 
     // Realiza um deposito pela agência na conta associada
     if($URI[2] == 'depositar'){

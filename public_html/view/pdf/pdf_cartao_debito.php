@@ -41,11 +41,20 @@ $Html = file_get_contents( Views . '/pdf/pdf_cartao_debito_main.html');
 $Card = file_get_contents( Views . '/pdf/pdf_cartao_debito_body.html');
 $Dados['body'] = '';
 
-// ppre($Contas); exit;
-
 use tekintian\TekinQR;
 
+
 foreach($Contas as $KeyC=>$ViewC){
+
+    // $_POST -> ct_user => ct_id
+    if(!isset($_POST['cartoes'][$KeyC])) continue;
+
+    if(!isset($ViewC['card_debito']['card_numero'])){
+        $Dados['body'] .= '<div class="" style="font-size: 9pt; margin-bottom: 10px; border: 1px solid #ccc; padding: 5px 10px; border-radius: 10px">
+            '.mb_strtoupper($ViewC['user_nome'], 'UTF-8').'<br/>não possui nenhum cartão de débito cadastrado.
+        </div>';
+        continue;
+    }
 
     // Dados do(s) cartao(oes)
     $CardDados = [
@@ -63,6 +72,7 @@ foreach($Contas as $KeyC=>$ViewC){
             ]))) -> render($ViewC['card_debito']['card_numero']),
     ];
 
+    // Troca as chaves pelo seus respectivos valores
     $Dados['body'] .= str_replace(
         array_map(fn($k) => '{' . $k . '}', array_keys($CardDados)),
         array_values($CardDados),

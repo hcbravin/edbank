@@ -296,17 +296,34 @@ function Token($Token=false){ // Gera ou verifica um token
 	}
 }
 function TokenGetVerificar(){ // Verifica se o token foi passado na URL
-	global $URI;
-	$Marcador = 'TKV::';
-	foreach ($URI as $KeyU => $ViewU) {
-		if (str_starts_with($ViewU, $Marcador)) {
-			$GLOBALS['_POST']['form_token'] = substr($ViewU, strlen($Marcador)); // adiciona o token ao $_POST
-			return true;
-			break;
-		}
-	}
-	return false;
+    global $URI;
+    $Marcador = 'TKV::';
+    if (!is_array($URI)) { return false; }
+
+    foreach ($URI as $KeyU => $ViewU) {
+        // Ignora posições nulas/vazias ou que não sejam string
+        if (!is_string($ViewU) || $ViewU === '') {
+            continue;
+        }
+        if (str_starts_with($ViewU, $Marcador)) {
+            $GLOBALS['_POST']['form_token'] = substr($ViewU, strlen($Marcador)); // adiciona o token ao $_POST
+            return true;
+        }
+    }
+    return false;
 }
+//function TokenGetVerificar(){ // Verifica se o token foi passado na URL
+//	global $URI;
+//	$Marcador = 'TKV::';
+//	foreach ($URI as $KeyU => $ViewU) {
+//		if (str_starts_with($ViewU, $Marcador)) {
+//			$GLOBALS['_POST']['form_token'] = substr($ViewU, strlen($Marcador)); // adiciona o token ao $_POST
+//			return true;
+//			break;
+//		}
+//	}
+//	return false;
+//}
 function crc16($payload) { // Calcula o CRC16
     $polynomial = 0x1021;
     $result = 0xFFFF;

@@ -46,6 +46,12 @@ if ($URI[1] == 'agencia') {
 
     if($URI[2]=='config'){
 
+        if(!$MS['gerente'][$Agencia->id]['isGerente']){
+            alert('Você não tem permissão para executar essa ação!');
+            shdr("gerencia/{$Agencia->id}/configuracoes");
+            goto Fim;
+        }
+
         // Salva a configuração informada
         if(!$URI[3]){
 
@@ -66,6 +72,8 @@ if ($URI[1] == 'agencia') {
             $Config['profissaoMax'] = (isset($P['profissaoMax']) AND is_numeric($P['profissaoMax'])) ? number_format($P['profissaoMax'],2,'.','') : $Config['profissaoMax']; // Profissão máxima
             $Config['profissaoMinSalario'] = (is_numeric($Config['profissaoMin'])) ? number_format($Config['profissaoMin'] / $SalarioMinimo, 3,'.','') : $Config['profissaoMin'];
             $Config['profissaoMaxSalario'] = (is_numeric($Config['profissaoMax'])) ? number_format($Config['profissaoMax'] / $SalarioMinimo, 3,'.','') : $Config['profissaoMax'];
+            $Config['gerenteMaxCash'] = (isset($P['gerenteMaxCash']) ? str_replace(['.',','],['','.'],$P['gerenteMaxCash']) : false);
+            $Config['gerenteMaxCash'] = (is_numeric($Config['gerenteMaxCash']) AND $Config['gerenteMaxCash'] > 0) ? number_format($Config['gerenteMaxCash'],2,'.','') : false;
             
             // Verifica os ids das agências com base nos números das agências
             $Config['transferenciasAgencias'] = $Agencia -> getIdByNumber(explode(',',$P['transferenciasAgencias']));

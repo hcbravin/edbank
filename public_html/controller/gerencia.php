@@ -21,6 +21,8 @@
     $Agencia = new Agencia();
     $Agencia -> id = $URI[1];
 
+    $AgenciaConfig = $Agencia -> getConfig();
+
     $Sorte = new Sorte();
     $Cards = $Sorte -> getCards();
 

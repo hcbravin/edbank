@@ -1,3 +1,14 @@
+(function($){
+    $.fn.extend({
+        pulsar: function (n = 2) {
+            for(i = 1; i <= n; i++) {
+                this.fadeTo(200, 0.3).fadeTo(200, 1.0);
+            }
+            return;
+        }
+    });
+})(jQuery);
+
 $(function () {
 
     function isNumeric(n) {
@@ -145,7 +156,15 @@ $(function () {
         }
     })
 
-
+    // Depositar && Receber
+    $('input[name="sendCashValue"], input[name="sendCashValueRemove"]').on('keyup', function () {
+        const maxValue = parseFloat($(this).attr('data-eb-maxValue'));
+        const valor = parseFloat($(this).val().replace('.', '').replace(',', '.'));
+        if(maxValue > 0 && valor > maxValue){
+            $(this).val('').focus();
+            $('#sendCashValueMax').pulsar();
+        }
+    });
 
     // Receber
     $('#pixGerarQrCodeButton').on('click', function () {
@@ -248,7 +267,12 @@ $(function () {
     })
 
     // Leitor de QR Code
-    let qrCodeReader = null; // Variável para armazenar o leitor de QR Code
+    if (typeof qrCodeReader === 'undefined') {
+        var qrCodeReader = null; // Variável para armazenar o leitor de QR Code
+    }
+
+    
+
     $('#pixQRCodeModal').on('shown.bs.modal', function () { // Quando o modal for mostrado
 
         if (!qrCodeReader) {
@@ -779,6 +803,225 @@ $(function () {
     $('button#GerenciaCardListGroupSubmiter').click(function(){
         $('#GerenciaCardListGroupForm').submit();
     })
+
+
+    // Sistema PicToPay
+    if($('#PicToPay').length){
+
+        var PicToPaySend = {
+            tapValor: 0,
+            tapType: 1,
+            tapBreak: false,
+            agencia: null,
+            tapCode: null,
+            tapPay: 0,
+            maxValue: 0,
+
+            // Elementos e configuração de cores
+            _pauseEl: null,
+            _reader: null,
+            _colors: {
+                processing: 'text-bg-warning',
+                success: 'text-bg-success',
+                error: 'text-bg-danger',
+                idle: 'text-bg-secondary'
+            },
+            fx: function(status, opts) {
+                opts = opts || {};
+                var self = this;
+
+                var $pause = this._pauseEl || $('#PicToPayPause');
+                if (!$pause.length) return;
+
+                if (status === 'idle') {
+                    $pause.addClass('d-none');
+                    $pause.find('.PicToPayPauseStatus').addClass('d-none');
+
+                    if (opts.resume && self._reader && self._reader.isScanning) {
+                        self._reader.resume();
+                    }
+                    return;
+                }
+
+                // Remove todas as cores conhecidas e aplica a do status
+                var color = this._colors[status] || this._colors.idle;
+                $pause
+                    .removeClass(Object.values(this._colors).join(' '))
+                    .addClass(color)
+                    .removeClass('d-none');
+
+                // Esconde todos os status e mostra só o pedido
+                $pause.find('.PicToPayPauseStatus').addClass('d-none');
+                $pause.find('.PicToPayPauseStatus[data-eb-status="' + status + '"]').removeClass('d-none');
+
+                // Texto extra (erro)
+                if (typeof opts.text === 'string') {
+                    $pause.find('#PicToPayPauseErrorText').text(opts.text);
+                }
+
+                // Auto-ocultar
+                if (opts.hideIn && opts.hideIn > 0) {
+                    setTimeout(function() {
+                        self.fx('idle');
+                        if (opts.resume && self._reader) {
+                            self._reader.resume();
+                        }
+                    }, opts.hideIn);
+                }
+            },
+
+            // Atalhos
+            fxProcessing: function() {
+                this.fx('processing');
+            },
+            fxSuccess: function(ms) {
+                this.fx('success', {
+                    hideIn: ms || 2000,
+                    resume: true
+                });
+            },
+            fxError: function(text, ms) {
+                this.fx('error', {
+                    text: text,
+                    hideIn: ms || 3500,
+                    resume: true
+                });
+            }
+        }
+
+        $('#PicToPayMainCodeShow').text($('#PicToPay').data('eb-tapcode'));
+
+        // PicToPay -> Start
+        $('#PicToPayMainStart').click(function() {
+            PicToPaySend.maxValue = $('#PicToPayMainValor').attr('data-eb-maxValue');
+            PicToPaySend.maxValue = PicToPaySend.maxValue > 0 ? PicToPaySend.maxValue : 0;
+            PicToPaySend.tapValor = parseFloat($('#PicToPayMainValor').val().replaceAll('.', '').replace(',', '.'));
+            PicToPaySend.tapType = parseInt($('input[name="pictopaymaintype"]:checked').val());
+            PicToPaySend.tapBreak = ($('#PicToPayMainBreak').is(':checked') ? 1 : 0);
+            PicToPaySend.agencia = $('#PicToPay').data('eb-agencia');
+            PicToPaySend.tapCode = $('#PicToPay').data('eb-tapcode');
+
+            console.log(PicToPaySend.maxValue);
+
+            if (PicToPaySend.tapValor > 0 && (PicToPaySend.maxValue == 0 || (PicToPaySend.maxValue > 0 && PicToPaySend.tapValor <= PicToPaySend.maxValue))) {
+                $('#PicToPayValorInfo').text('R$ ' + PicToPaySend.tapValor.toFixed(2).replace('.', ','));
+                $('#PicToPayTypeEntrada, #PicToPayTypeSaida').addClass('d-none');
+                if (PicToPaySend.tapType == 0) {
+                    $('#PicToPayTypeEntrada').removeClass('d-none');
+                } else {
+                    $('#PicToPayTypeSaida').removeClass('d-none');
+                }
+                console.log(PicToPaySend);
+                $('#PicToPay').modal('show');
+            
+            } else {
+                $('#PicToPayMainValorMaxCash').pulsar();
+                $('#PicToPayMainValor').focus().select();
+            }
+        });
+
+        // PicToPay Inicia o modal para leitura de QR Code
+        if (typeof qrCodeReader === 'undefined') {
+            var qrCodeReader = false;
+        }
+        PicToPaySend.tapPay = 0;
+
+        $('#PicToPay').on('shown.bs.modal', function() { // Quando o modal for mostrado
+
+            let x = window.ebScreen.x;
+            let y = window.ebScreen.y;
+            let d = parseInt($('#PicToPayCamera').offset().top.toFixed(0))
+            let newY = y * (((y - d) / y) * 0.95);
+            $('#PicToPayCamera').css('cssText', 'height: ' + newY + 'px !important;');
+
+            const statusBar = $(this).find('#PicToPayPause');
+            const statusBarColor = 'text-bg-secondary text-bg-success text-bg-warning text-bg-danger';
+
+            if (!qrCodeReader) {
+                qrCodeReader = new Html5Qrcode("qr-reader"); // Inicializa o leitor de QR Code
+                PicToPaySend._reader = qrCodeReader; // guarda referência
+            }
+
+            qrCodeReader.start({
+                    facingMode: "user" // "environment" or "user"
+                }, {
+                    fps: 2,
+                    qrbox: function(viewfinderWidth, viewfinderHeight) {
+                        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                        let qrboxSize = Math.floor(minEdge * 0.7);
+                        return {
+                            width: qrboxSize * 1.2,
+                            height: qrboxSize
+                        };
+                    },
+                    aspectRatio: 1.0,
+                    disableFlip: false,
+                },
+                function(qrCodeMessage) {
+
+                    statusBar.addClass('d-none');
+
+                    if (!qrCodeMessage) {
+                        console.log('QR Code inválido');
+                        statusBar.filter('[data-eb-status="erro"]').removeClass('d-none');
+                        return;
+                    }
+
+                    qrCodeReader.pause(true);
+                    PicToPaySend.fxProcessing();
+
+                    $.ajax({
+                        url: '/api.php/agencia/' + PicToPaySend.agencia + '/picToPay',
+                        type: 'POST',
+                        data: {
+                            agencia: PicToPaySend.agencia,
+                            tapValue: PicToPaySend.tapValor,
+                            tapType: PicToPaySend.tapType,
+                            tapBreak: PicToPaySend.tapBreak,
+                            tapCode: PicToPaySend.tapCode,
+                            qrCode: qrCodeMessage
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            // console.log(response);
+
+                            if (response.status === 'success') {
+                                PicToPaySend.tapPay++;
+                                $('.PicToPayTapQt').text(PicToPaySend.tapPay);
+
+                                PicToPaySend.fxSuccess(2000);
+                                return;
+                            }
+
+                            if (response.status === 'error') {
+                                PicToPaySend.fxError(response.message || 'Falha na transação', 3000);
+                                return;
+                            }
+
+                            // status inesperado
+                            PicToPaySend.fxError('Resposta inesperada do servidor', 3000);
+                        },
+                        error: function(xhr, status, err) {
+                            // console.error(xhr, status, err);
+                            PicToPaySend.fxError('Erro de comunicação', 3000);
+                        }
+                    });
+
+                },
+                function(errorMessage) {
+                    // alert('Erro na leitura do qrCode!');
+                    // console.warn("Erro leitura:", errorMessage);
+                }
+            );
+
+        });
+        $('#PicToPay').on('hidden.bs.modal', function() { // Quando o modal for fechado fecha a camera
+            if (qrCodeReader) {
+                qrCodeReader.stop().catch(() => {});
+            }
+        });
+
+    };
 
 });
 

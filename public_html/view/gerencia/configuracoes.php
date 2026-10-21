@@ -1,10 +1,16 @@
 <form action="/upg/agencia/config" method="post">
     <div class="row">
         <div class="col-12 text-end my-2">
+            <?php if($MS['gerente'][$URI[1]]['isGerente']){ ?>
             <button type="button" class="btn btn-sm btn-dark w-px-150" data-bs-toggle="modal" data-bs-target="#ModalConfigCopy"><i class="bi bi-copy me-1"></i> Copiar</button>
             <button type="submit" class="btn btn-sm btn-success w-px-150"><i class="bi bi-floppy-fill me-1"></i> Salvar</button>
             <input type="hidden" name="agencia" value="<?= $URI[1]; ?>">
             <?= Token(); ?>
+            <?php }else{ ?>
+            <div class="infomain bd-1 bd-primary shadow-sm mb-2 text-start">
+                Você é um subgerente. As configurações abaixo estão visíveis, mas, não podem ser alteradas.
+            </div>
+            <?php } ?>
         </div>
     </div>
 
@@ -16,7 +22,7 @@
             <button class="nav-link" id="nav-debitos-tab" data-bs-toggle="tab" data-bs-target="#nav-debitos" type="button" role="tab" aria-controls="nav-debitos" aria-selected="false"><i class="bi bi-cash-coin me-1"></i> Débitos Automáticos</button>
             <button class="nav-link" id="nav-shop-tab" data-bs-toggle="tab" data-bs-target="#nav-shop" type="button" role="tab" aria-controls="nav-shop" aria-selected="false"><i class="bi bi-shop me-1"></i> shop</button>
             <button class="nav-link" id="nav-tempo-tab" data-bs-toggle="tab" data-bs-target="#nav-tempo" type="button" role="tab" aria-controls="nav-tempo" aria-selected="false"><i class="bi bi-clock me-1"></i> Tempo (Ciclo)</button>
-            <button class="nav-link" id="nav-encerrar-tab" data-bs-toggle="tab" data-bs-target="#nav-encerrar" type="button" role="tab" aria-controls="nav-encerrar" aria-selected="false"><i class="bi bi-door-closed-fill me-1"></i> Fechar Agência</button>
+            <!-- <button class="nav-link" id="nav-encerrar-tab" data-bs-toggle="tab" data-bs-target="#nav-encerrar" type="button" role="tab" aria-controls="nav-encerrar" aria-selected="false"><i class="bi bi-door-closed-fill me-1"></i> Fechar Agência</button> -->
         </div>
     </nav>
 
@@ -103,10 +109,21 @@
                 Um dos problemas que pode ocorrer é o estudante criar uma agência fictícia e gerar fundos para, em seguida, transferi-los para uma conta própria dentro dessa mesma agência. Para evitar esse tipo de situação, as transferências entre agências serão inicialmente bloqueadas. A seguir, você poderá configurar como as transferências deverão funcionar.
             </div>
 
-            <div class="row justify-content-center">
-                <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="infomain bd-1 bd-success mb-2 shadow-sm fw-bold">Pic to Pay | Depósitos | Débitos</div>
+                    <ul class="list-group shadow-md">
+                        <li class="list-group-item ft-10">
+                            Valor máximo de débito ou crédito para gerente.
+                            <input type="text" name="gerenteMaxCash" class="MaskValor form-control form-control-sm text-center" placeholder="R$ 0.00" value="<?= @str_replace([',', '.'], ['', ','], $Configuracoes['gerenteMaxCash']); ?>">
+                            Mantenha em branco para nenhuma limitação.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-12 col-sm-10 col-md-8 col-lg-5">
                     <div class="infomain bd-1 bd-success mb-2 shadow-sm fw-bold">Modo de transferência</div>
-                    <ul class="list-group">
+                    <ul class="list-group shadow-md">
                         <li class="list-group-item">
                             <input class="form-check-input me-1" type="radio" name="transferenciasTipo" value="0" id="transferenicaTipo1" <?= iCheck(@$Configuracoes['transferenciasTipo'], 0); ?>>
                             <label class="form-check-label" for="transferenicaTipo1">Não poderá ocorrer transferências entre agências</label>
@@ -123,10 +140,8 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-
-            <div class="row justify-content-center mt-2">
-                <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                
+                <div class="col-12 col-sm-10 col-md-8 col-lg-4">
                     <div class="infomain bd-1 bd-success mb-2 shadow-sm fw-bold">Agências Selecionadas</div>
                     <input type="text" name="transferenciasAgencias" id="transferenciasAgencias" class="form-control" value="<?= @implode(',', $Configuracoes['transferenciasAgencias']); ?>">
                     <small class="ft-8">Separe as agências com vírgula</small>
@@ -350,14 +365,14 @@
             </div>
         </div>
         <!-- Encerrar Agência -->
-        <div class="tab-pane fade p-3" id="nav-encerrar" role="tabpanel" aria-labelledby="nav-encerrar-tab" tabindex="0">
+        <!-- <div class="tab-pane fade p-3" id="nav-encerrar" role="tabpanel" aria-labelledby="nav-encerrar-tab" tabindex="0">
             <div class="d-flex justify-content-between">
                 <div class="infomain bd-1 bd-danger shadow-md mb-2 w-100 align-self-start">
                     O encerramento da agência não poderá ser desfeito. Esse processo irá apagar completamente todos os dados dos clientes e os mesmos <strong>NÃO PODERÃO</strong> ser recuperados.
                 </div>
                 <button class="btn btn-danger btn-sm align-self-start w-px-200 mx-2" type="button" data-eb-rmv="upg/agencia/encerrar/<?= $URI[1]; ?>"><i class="bi bi-ban me-1"></i> Encerrar Agência</button>
             </div>
-        </div>
+        </div> -->
         
     </div>
 </form>

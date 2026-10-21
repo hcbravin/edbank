@@ -1,9 +1,11 @@
 <form action="/exe/agencia/subgerente" method="post">
+    <?php if($MS['gerente'][$URI[1]]['isGerente']){ ?>
     <div class="text-end mb-2">
         <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#ModalSubGerente" type="button"><i class="bi bi-plus-circle me-1"></i> Cadastrar</button>
         <?= Button(); ?>
         <input type="hidden" name="agencia" value="<?= $URI[1]; ?>">
     </div>
+    <?php } ?>
 
     <ul class="list-group mt-3 shadow-md" id="SubgerentesList">
         <?php if (!count($Subgerentes)) { ?>
@@ -24,7 +26,7 @@
                         <i class="bi bi-clock-history me-1"></i> Convite Enviado
                     </span>
 
-                <?php } else { ?>
+                <?php } else {if($MS['gerente'][$URI[1]]['isGerente']){ ?>
                     <div class="form-check form-switch">
                         <input type="hidden" name="subgerente[<?= $ViewSG['agg_user']; ?>]" value="0">
                         <input class="form-check-input" name="subgerente[<?= $ViewSG['agg_user']; ?>]" value="1" type="checkbox" role="switch" id="subGerenteSwitch<?= $ViewSG['agg_user']; ?>" <?= $ViewSG['agg_ativo'] ? 'checked' : ''; ?>>
@@ -32,7 +34,7 @@
                     </div>
                     <hr class="my-2">
                     <button class="btn btn-sm btn-danger" type="button" data-eb-rmv="exe/agencia/subgerente/<?= $URI[1] ?>/remover/<?= $MS['user_id']; ?>"><i class="bi bi-trash3-fill"></i> Excluir</button>
-                <?php } ?>
+                <?php }} ?>
             </div>
         </li>
         <?php }} ?>

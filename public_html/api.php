@@ -41,8 +41,83 @@ if($URI[1]=='agencia'){ // Operações relacionadas às agências
 
             // Sistema picToPay
             if($URI[3] == 'picToPay'){
+
+                $_POST['tapBreak'] = ($_POST['tapBreak'] == 1) ? 1 : 0; // Verifica se a transação é necessário interrompida em falta de saldo
+                $_POST['tapType'] = ($_POST['tapType'] == 1) ? 1 : 0; // Verifica o tipo de operação. 1 crédito 0 débito
+                $_POST['tapValue'] = floatval($_POST['tapValue']); // Verifica o valor da transação
+                $_POST['tapValue'] = (is_float($_POST['tapValue'])) ? $_POST['tapValue'] : 0; // Verifica o valor da transação
+                $_POST['tapValue'] = ($_POST['tapValue'] > 0) ? $_POST['tapValue'] : 0; // Verifica se o valor da transação é maior que zero
+
+                $Cartao = $Agencia -> getCartaoByNumero($_POST['qrCode']);
+                // Valida a existencia do cartao
+                if(!is_array($Cartao) OR !array_key_exists('card_numero', $Cartao)){
+                    print json_encode(['status'=>'error','message'=>'Cartão não encontrado!']);
+                    goto Fim;
+                }
+
+                // Verifica se o cartao é do tipo débito
+                if($Cartao['card_tipo'] != 0){
+                    print json_encode(['status'=>'error','message'=>'Cartão inválido!']);
+                    goto Fim;
+                }
+
+                // Verifica se o cartão está ativo e dentro da validade
+                if($Cartao['card_ativo'] != 1 OR date('Y-m-d') > $Cartao['card_validade']){
+                    print json_encode(['status'=>'error','message'=>'Cartão inativo ou vencido!']);
+                    goto Fim;
+                }
+
+                // Busca informacoes do dono do cartão
+                $Usuario = new Usuario();
+                $Usuario -> setID($Cartao['user_id']);
+                $findUser = $Usuario -> findUser();
+
+                if(!is_array($findUser) OR !array_key_exists('user_id', $findUser)){
+                    print json_encode(['status'=>'error','message'=>'Usuário do cartão inválido!']);
+                    goto Fim;
+                }
+
+                $UserNome = $findUser['user_nome'];
+                $UserNomeGerente = ucfirst(strstr($MS['user_nome'], ' ', true));
+
+                $Conta = new Conta();
+                $Conta -> contaID = $Cartao['card_conta'];
+
+                // Verifica se já não foi executado
+                if($Conta -> getExtratoChave($_POST['tapCode'])){
+                    print json_encode(['status'=>'error','nomeCliente' => $UserNome,'message'=>'Transação duplicada!']);
+                    goto Fim;
+                }
+
+                $Saldo = $Conta -> getSaldo();
+
+                // Debitar mesmo sem saldo = 1
+                // O tipo é débito ? O saldo é menor do que o valor a ser debitado? o break nao foi ativado?
+                if($_POST['tapType'] == 0 AND $Saldo < $_POST['tapValue'] AND $_POST['tapBreak'] == 0){
+                    print json_encode(['status'=>'error','nomeCliente' => $UserNome,
+                        'message'=>'Saldo insuficiente!',
+                        'post' => $_POST
+                    ]);
+                    goto Fim;
+                }
+
+                $Transacao = $Conta -> setExtrato(
+                    'PicToPay por '.$UserNomeGerente, 
+                    $_POST['tapValue'] * ($_POST['tapType'] == 1 ? 1 : -1),
+                    $_POST['tapCode']
+                );
+
+                if(!$Transacao){
+                    print json_encode(['status'=>'error','nomeCliente' => $UserNome,
+                        'message'=>'Erro ao registrar transação!'
+                    ]);
+                    goto Fim;
+                }
             
-                print json_encode(['status'=>'success', 'post' => $_POST]);
+                print json_encode(['status'=>'success','nomeCliente' => $UserNome,
+                    'message'=>'Transação realizada com sucesso!',
+                    'post' => $_POST
+                ]);
 
             goto Fim;}
 

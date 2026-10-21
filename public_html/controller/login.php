@@ -26,9 +26,6 @@ if($URI[1] == 'google'){
         $userId = new Login() -> processarLoginSocial($userProfile, $URI[1]);   
 
         // 4. Busca informações do usuário e inicia a sessão
-        // $_SESSION['user_id'] = $userId;
-        // $_SESSION['user_nome'] = $userProfile->displayName;
-        
         $User  = new Usuario($userId);
         $findUSer = $User -> findUser();
         $User -> getBancoInfo(); // Inicia as informações de contas e gerencias
@@ -36,7 +33,7 @@ if($URI[1] == 'google'){
         $_SESSION = array_merge($_SESSION, $findUSer);
         $MS = $_SESSION; // Atualiza a variável global de sessão do sistema
 
-        // Desloga para o próximo teste (opcional)
+        // Desloga para o próximo teste
         // $adapter->disconnect();
 
         hdr('dashboard');

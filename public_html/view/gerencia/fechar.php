@@ -8,7 +8,9 @@
                 <br>
                 Caso deseje reativar a agência, basta adicionar dias clicando no botão +30 dias.
             </div>
+            <?php if($MS['gerente'][$URI[1]]['isGerente']){ ?>
             <button class="btn btn-sm btn-warning mt-4 mb-2" data-eb-rmv="upg/agencia/fechar/<?= $URI[1]; ?>/<?= Token('get'); ?>"><i class="bi bi-building-fill-lock me-1"></i> Fechar Agência</button>
+            <?php } ?>
         </div>
     </div>
     <div class="col-12 col-md-6">
@@ -20,7 +22,14 @@
                 <br>
                 Todos os dados serão processados, cartões pagos, investimento resgatados, contas finalizadas.
             </div>
+            <?php if($MS['gerente'][$URI[1]]['isGerente']){ ?>
             <button class="btn btn-sm btn-danger mt-4 mb-2" data-eb-rmv="upg/agencia/encerrar/<?= $URI[1]; ?>/<?= Token('get'); ?>"><i class="bi bi-house-lock-fill me-1"></i> Excluir Agência</button>
+            <?php } ?>
         </div>
     </div>
 </div>
+<?php if(!$MS['gerente'][$URI[1]]['isGerente']){ ?>
+<div class="infomain bd-1 bd-warning mt-2 shadow-md">
+    Os subgerentes não tem permissão para fechar ou encerrar uma agência.
+</div>
+<?php } ?>

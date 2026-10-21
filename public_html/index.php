@@ -11,7 +11,6 @@ if($URI[0] === 'pdf'){
     require_once Controller . '/pdf.php';
     goto CloseAPP;
 }
-
 ?>
 
 <!DOCTYPE html>
