@@ -1,5 +1,5 @@
 <?php 
-    alert('Abertura de novas agências indisponível no momento.'); goto Fim;  
+    #alert('Abertura de novas agências indisponível no momento.'); goto Fim;  
 ?>
 
 <div class="row justify-content-center collapse multi-collapse show" id="AgenciaInfo">
@@ -230,7 +230,7 @@
 
 <div class="row justify-content-center collapse multi-collapse" id="AgenciaForm">
     <div class="col-lg-10 col-xl-8">
-        <form action="/exe/nova-agencia" method="post">
+        <form action="/exe/agencia/criar" method="post">
 
         
             <!-- Card principal -->
@@ -248,22 +248,33 @@
 
                     <!-- Campo CEP -->
                     <div class="mb-4">
-                        <label for="cep" class="form-label fw-bold">
-                            <i class="bi bi-geo-alt me-2"></i>
-                            CEP da Agência
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="bi bi-postcard"></i>
-                            </span>
-                            <input type="text" class="form-control" name="agencia[cep]" id="agencia-cep" placeholder="00000-000" maxlength="9" required>
-                            <button class="btn btn-outline-secondary" type="button" id="buscar-cep">
-                                <i class="bi bi-search"></i>
-                                Buscar
-                            </button>
-                        </div>
-                        <div class="form-text">
-                            Digite o CEP onde a agência será localizada
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <label for="cep" class="form-label fw-bold" for="agencia-info">
+                                    <i class="bi bi-pencil-square me-2"></i>
+                                    Nome da Agência
+                                </label>
+                                <input type="text" class="form-control" name="agencia[info]" id="agencia-info" placeholder="Máximo 25 caracteres" maxlength="25" required>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="cep" class="form-label fw-bold">
+                                    <i class="bi bi-geo-alt me-2"></i>
+                                    CEP da Agência
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-postcard"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="agencia[cep]" id="agencia-cep" placeholder="00000-000" maxlength="9" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="buscar-cep">
+                                        <i class="bi bi-search"></i>
+                                        Buscar
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    Digite o CEP onde a agência será localizada
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Resultado da busca do CEP (inicialmente oculto) -->
@@ -302,26 +313,30 @@
                         <!-- Cards explicativos -->
                         <div class="row mt-1">
                             <div class="col-md-6">
-                                <div class="card h-100 border-success" id="card-trancado-off">
-                                    <div class="card-body text-center bg-success bg-opacity-10">
-                                        <i class="bi bi-unlock-fill text-success fs-3 mb-3"></i>
-                                        <h6 class="card-title">Aberta</h6>
-                                        <p class="card-text small text-muted text-success">
-                                            Qualquer pessoa poderá acessar a agência e seus serviços
-                                        </p>
+                                <label for="trancado-toggle" class="w-100">
+                                    <div class="card h-100 border-success mpoint" id="card-trancado-off">
+                                        <div class="card-body text-center bg-success bg-opacity-10">
+                                            <i class="bi bi-unlock-fill text-success fs-3 mb-3"></i>
+                                            <h6 class="card-title">Aberta</h6>
+                                            <p class="card-text small text-muted text-success">
+                                                Qualquer pessoa poderá acessar a agência e seus serviços
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                </label>
                             </div>
                             <div class="col-md-6">
-                                <div class="card h-100" id="card-trancado-on">
-                                    <div class="card-body text-center bg-opacity-10">
-                                        <i class="bi bi-lock-fill fs-3 mb-3"></i>
-                                        <h6 class="card-title">Trancada</h6>
-                                        <p class="card-text small text-muted">
-                                            Somente usuários com a senha de acesso poderão utilizar a agência
-                                        </p>
+                                <label for="trancado-toggle" class="w-100">
+                                    <div class="card h-100 mpoint" id="card-trancado-on">
+                                        <div class="card-body text-center bg-opacity-10">
+                                            <i class="bi bi-lock-fill fs-3 mb-3"></i>
+                                            <h6 class="card-title">Trancada</h6>
+                                            <p class="card-text small text-muted">
+                                                Somente usuários com a senha de acesso poderão utilizar a agência
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                </label>
                             </div>
                         </div>
                     </div>

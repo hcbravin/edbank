@@ -7,24 +7,6 @@ if (!Logado()) { goto Fim; }
 $P = $_POST; $countErro = 0;
 // =========================================================================
 
-if($URI[1]=='nova-agencia'){
-
-    // Cria uma nova agência
-    $Agencia = new Agencia();
-    $Nova = $Agencia -> Criar($P['agencia']['cep'], isset($P['agencia']['key']) ? true : false);
-    if($Nova == false){ 
-        Alert('Não foi possível criar a nova agência!'); 
-        $countErro++;
-        shdr('abertura/agencia');
-        goto Status; 
-    }
-    $Agencia -> AtualizarSession(); // Atualiza a sessão do usuário com a nova agência
-
-    // Redireciona para a página de gerenciamento da nova agência
-    shdr("gerencia/{$Nova}/configuracoes");
-
-goto Status;}
-
 if($URI[1] == 'conta'){ // Operações com contas
 
     if($URI[2] == 'nova'){ // Cria uma nova conta
@@ -524,6 +506,24 @@ if($URI[1] == 'conta'){ // Operações com contas
 goto Status;}
 
 if($URI[1]=='agencia'){
+
+    if($URI[2] == 'criar'){
+
+        // Cria uma nova agência
+        $Agencia = new Agencia();
+        $Nova = $Agencia -> Criar($P['agencia']['cep'], isset($P['agencia']['key']) ? true : false, $P['agencia']['info']);
+        if($Nova == false){ 
+            Alert('Não foi possível criar a nova agência!'); 
+            $countErro++;
+            shdr('abertura/agencia');
+            goto Status; 
+        }
+        $Agencia -> AtualizarSession(); // Atualiza a sessão do usuário com a nova agência
+
+        // Redireciona para a página de gerenciamento da nova agência
+        shdr("gerencia/{$Nova}/configuracoes");
+
+    goto Status;}
 
     $AgenciaID = (isset($P['agencia']) ? $P['agencia'] : $URI[3]);
 

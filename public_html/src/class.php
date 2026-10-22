@@ -699,10 +699,11 @@ class Agencia
 		$this->Debitos = false;
 	}
 	// Funções relacionadas a agencia
-	public function Criar($cep, $key)
+	public function Criar($cep, $key, $info = '')
 	{
 		global $db, $MS;
 		$key = ($key) ? BaseEL_encode(rand(999, 999999)) : NULL;
+		$info = mb_strtoupper($info, 'UTF-8');
 
 		// Primeiro pega o próximo número
 		$query = $db->query("SELECT MAX(ag_num) + 1 as prox_num FROM agencia");
@@ -710,9 +711,9 @@ class Agencia
 		$prox_num = $row['prox_num'] ?? 1; // Se for NULL (tabela vazia), começa com 1
 
 		// Depois faz o INSERT
-		$Ins = $db->prepare("INSERT INTO agencia (ag_user, ag_num, ag_cep, ag_key, ag_fim) 
-							VALUES (?, ?, ?, ?, (SELECT CURDATE() + INTERVAL 30 DAY))");
-		$Ins->bind_param("iiss", $MS['user_id'], $prox_num, $cep, $key);
+		$Ins = $db->prepare("INSERT INTO agencia (ag_user, ag_num, ag_cep, ag_key, ag_fim, ag_info) 
+							VALUES (?, ?, ?, ?, (SELECT CURDATE() + INTERVAL 30 DAY), ?)");
+		$Ins->bind_param("iisss", $MS['user_id'], $prox_num, $cep, $key, $info);
 
 		if (!$Ins->execute()) {
 			return false;
