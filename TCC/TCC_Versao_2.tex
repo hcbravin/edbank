@@ -1,0 +1,449 @@
+% !TeX program = xelatex
+% !TeX encoding = UTF-8
+%% Copyright 2012-2013 by abnTeX2 group at http://abntex2.googlecode.com/ 
+% Adaptado para uso no DACC - IF Sudeste MG, campus Rio Pomba
+% ABNT NBR 14724:2011: Informacao e documentacao - Trabalhos academicos
+% ------------------------------------------------------------------------
+% PACOTES
+% ------------------------------------------------------------------------
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	oneside,			% para impressão em verso e anverso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,				% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{abntex2}
+
+\usepackage{cmap}				% Mapear caracteres especiais no PDF
+%\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+%\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{lastpage}			% Usado pela Ficha catalográfica
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{underscore}
+\usepackage{float}
+\usepackage[final]{pdfpages}
+\usepackage{multicol}
+\usepackage{fontspec}
+%\setmainfont{Arial}
+% Adicionado Manualmente
+\usepackage{fontspec}
+\setmainfont{Liberation Sans}
+\usepackage{lipsum}				% para geração de dummy text
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+\renewcommand{\backrefpagesname}{}
+\renewcommand{\backref}{}
+
+
+
+
+% ------------------------------------------------------------------------
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ------------------------------------------------------------------------
+
+\titulo{Desenvolvimento Full Stack de um simulador de banco para trabalhar matemática financeira com estudantes do ensino médio.}
+
+
+\autor{Henrique Casagrande Bravin}
+\local{Manhuaçu}
+\data{2026}
+\orientador{Prof. Ms.  ROBSON DE SOUZA RESENDE}
+\coorientador{Nome do Coorientador}
+\tipotrabalho{Trabalho de Conclusão de Curso}
+\preambulo{Trabalho de Conclusão curso  apresentado ao \textit Campus Manhuaçu, do Instituto Federal de Educação, Ciência e Tecnologia do Sudeste de Minas Gerais, como parte das exigências do curso de Pós-Graduação Lato Sensu em Desenvolvimento Full Stack.}
+% ---
+
+
+% ---
+% Configurações de aparência do PDF final
+
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={Nome do aluno(a)}, %procurar
+		pdfkeywords={content-based image retrieval}{desenvolvimento web}{exame de fundo de olho}{histograma backprojection}{íris}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=black,          	% color of internal links
+    	citecolor=black,        		% color of links to bibliography
+    	filecolor=black,      		% color of file links
+		urlcolor=black,
+		bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa
+% ---
+\begin{center}
+\textbf{ 
+INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO SUDESTE DE MINAS GERAIS - CAMPUS RIO POMBA}
+\end{center}
+
+\imprimircapa
+% ---
+
+% ---
+% Folha de rosto
+% (o * indica que haverá a ficha bibliográfica)
+% ---
+\imprimirfolhaderosto*
+% ---
+
+% ---
+% Inserir a ficha bibliografica
+% ---
+
+% Para inserir a ficha catalográfica oficial da biblioteca, utilize:
+% \begin{fichacatalografica}
+%     \includepdf{fig_ficha_catalografica.pdf}
+% \end{fichacatalografica}
+
+% Para inserir a ficha catalográfica temporária, utilize:
+
+\begin{fichacatalografica}
+	\vspace*{\fill}					% Posição vertical
+	\hrule							% Linha horizontal
+	\begin{center}					% Minipage Centralizado
+	\begin{minipage}[c]{12.5cm}		% Largura
+	
+	FICHA CATALOGRÁFICA TEMPORÁRIA \\
+	\imprimirautor
+	
+	\hspace{0.5cm} \imprimirtitulo  / \imprimirautor. --
+	\imprimirlocal, \imprimirdata-
+
+	\hspace{0.5cm} \imprimirorientadorRotulo~\imprimirorientador\\
+	
+	\hspace{0.5cm}
+	\parbox[t]{\textwidth}{\imprimirtipotrabalho~--~Instituto Federal de Educação, Ciência e Tecnologia do Sudeste de Minas, Campus Rio Pomba,
+	\imprimirdata.}\\
+
+	
+	\end{minipage}
+	\end{center}
+	\hrule
+\end{fichacatalografica}
+% ---
+
+% ---
+% Inserir errata
+% ---
+%\begin{errata}
+%Elemento opcional da \citeonline[4.2.1.2]{NBR14724:2011}. %Exemplo:
+
+%\vspace{\onelineskip}
+%
+%FERRIGNO, C. R. A. \textbf{Tratamento de neoplasias ósseas apendiculares com
+%reimplantação de enxerto ósseo autólogo autoclavado associado ao plasma
+%rico em plaquetas}: estudo crítico na cirurgia de preservação de membro em
+%cães. 2011. 128 f. Tese (Livre-Docência) - Faculdade de Medicina Veterinária e
+%Zootecnia, Universidade de São Paulo, São Paulo, 2011.
+
+%\begin{table}[htb]
+%\center
+%\footnotesize
+%\begin{tabular}{|p{1.4cm}|p{1cm}|p{3cm}|p{3cm}|}
+%  \hline
+%   \textbf{Folha} & \textbf{Linha}  & \textbf{Onde se lê} % & \textbf{Leia-se}  \\
+%    \hline
+%    1 & 10 & auto-conclavo & autoconclavo\\
+%   \hline
+%\end{tabular}
+%\end{table}
+%
+%\end{errata}
+% ---
+
+% ---
+% Inserir folha de aprovação
+% ---
+% Se possuir a folha de aprovação emitida pela biblioteca, utilizar o comando abaixo para inserir o PDF. Senão, use o modelo temporário abaixo
+% \includepdf{folhadeaprovacao_final.pdf}
+%
+\begin{folhadeaprovacao}
+
+  \begin{center}
+    {\ABNTEXchapterfont\large\imprimirautor}
+
+    \vspace*{\fill}\vspace*{\fill}
+    {\ABNTEXchapterfont\bfseries\Large\imprimirtitulo}
+    \vspace*{\fill}
+    
+    \hspace{.45\textwidth}
+    \begin{minipage}{.5\textwidth}
+        \imprimirpreambulo
+    \end{minipage}%
+    \vspace*{\fill}
+   \end{center}
+    
+   Trabalho aprovado. \imprimirlocal, 25 de novembro de 2020:
+
+   \assinatura{\textbf{\imprimirorientador} Orientadora, IF Sudeste MG - Rio Pomba} 
+   \assinatura{\textbf{Nome do Coorientador}, \\ Coorientador, IF Sudeste MG - Rio Pomba}
+   \assinatura{\textbf{PROFESSOR X} \\ IF Sudeste MG - Rio Pomba}
+   \assinatura{\textbf{PROFESSOR Y} \\ IF Sudeste MG - Rio Pomba}
+      
+   \begin{center}
+    \vspace*{0.5cm}
+    {\large\imprimirlocal}
+    \par
+    {\large\imprimirdata}
+    \vspace*{1cm}
+  \end{center}
+  
+\end{folhadeaprovacao}
+% ---
+
+% ---
+% Dedicatória
+% ---
+\input{preTextual/dedicatoria}
+% ---
+
+% ---
+% Agradecimentos
+% ---
+\input{preTextual/agradecimentos}
+% ---
+
+% ---
+% Epígrafe
+% ---
+\input{preTextual/epigrafe}
+% ---
+
+% ---
+% RESUMOS
+% ---
+
+% resumo em português
+\input{Textual/resumoBR}
+
+% resumo em inglês
+\input{Textual/resumoUS}
+
+
+% ---
+% inserir lista de ilustrações
+% ---
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+\cleardoublepage
+% ---
+
+% ---
+% inserir lista de tabelas
+% ---
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+\cleardoublepage
+% ---
+
+% ---
+% inserir lista de abreviaturas e siglas
+% ---
+\input{Textual/listaSiglas}
+% ---
+
+% ---
+% inserir lista de símbolos
+% ---
+%\begin{simbolos}
+%  \item[$ \Lambda $] Lambda
+%\end{simbolos}
+% ---
+
+% ---
+% inserir o sumario
+% ---
+\pdfbookmark[0]{\contentsname}{toc}
+\addcontentsline{arquivo}{unidade}{entrada}
+\tableofcontents*
+\cleardoublepage
+% ---
+
+
+
+% ---------------------------------------------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ---------------------------------------------------------------------------------------------
+\textual
+\setcounter{page}{1}
+
+\chapter{Introdução}
+\label{cap-introducao}
+\input{Texto/1_Introducao}
+
+\chapter{Fundamentação Teórica}
+\label{cap-fundamentacao}
+\input{Texto/2_fundamentacao}
+
+\chapter{Soluções Relacionadas}
+\label{cap-solucoes}
+\input{Texto/3_solucoes}
+
+\chapter{Concepção do Simulador}
+\label{cap-simulador}
+\input{Texto/4_concepcao}
+
+\chapter{Desenvolvimento da Aplicação}
+\label{cap-aplicacao}
+\input{Texto/5_desenvolvimento}
+
+\chapter{Verificação e Resultados}
+\label{cap-resultados}
+\input{Texto/6_verificacao}
+
+\chapter{Considerações Finais}
+\label{cap-consideracoes}
+\input{Texto/7_consideracoes}
+
+
+% Introducao
+% \input{Textual/cap1}
+
+% Fundamentação Teórica
+% \input{Textual/cap2}
+
+% Revisão Bibliográfica
+% \input{Textual/cap3}
+
+% Metodologia
+% \input{Textual/cap4}
+
+% Considerações Finais
+% \input{Textual/capConclusao}
+
+
+
+
+% ---
+% Finaliza a parte no bookmark do PDF, para que se inicie o bookmark na raiz
+% ---
+\bookmarksetup{startatroot}% 
+% ---
+
+% ---------------------------------------------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ---------------------------------------------------------------------------------------------
+\postextual
+
+
+% ---------------------------------------------------------------------------------------------
+% Referências bibliográficas
+
+
+
+
+% ---------------------------------------------------------------------------------------------
+\bibliography{referenciais.bib}
+
+% ---------------------------------------------------------------------------------------------
+% Glossário
+% ---------------------------------------------------------------------------------------------
+%
+% Consulte o manual da classe abntex2 para orientações sobre o glossário.
+%
+%\glossary
+
+% ---------------------------------------------------------------------------------------------
+% Apêndices
+% ---------------------------------------------------------------------------------------------
+
+% ---
+% Inicia os apêndices
+% ---
+% \begin{apendicesenv}
+%\partapendices
+%\chapter{Modelagem do Sistema DOR}
+
+
+
+
+
+
+
+
+
+
+
+%\end{apendicesenv}
+% ---
+
+
+% ---------------------------------------------------------------------------------------------
+% Anexos
+% ---------------------------------------------------------------------------------------------
+
+% ---
+% Inicia os anexos
+% ---
+%\begin{anexosenv}
+%\partanexos
+%\chapter{Protocolo de Aquisição de Imagens}
+
+
+
+
+
+
+
+
+%\end{anexosenv}
+
+% ---------------------------------------------------------------------------------------------
+% INDICE REMISSIVO
+% ---------------------------------------------------------------------------------------------
+
+\printindex
+
+\end{document}
