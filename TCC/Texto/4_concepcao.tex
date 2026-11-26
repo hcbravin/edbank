@@ -1,33 +1,25 @@
-O EDBank é uma aplicação web que simula operações bancárias para uso
-em atividades de matemática financeira no Ensino Médio. A aplicação
-organiza as contas em agências e permite aos participantes movimentar
-valores fictícios, acompanhar registros no extrato e consultar as
-consequências financeiras de suas operações.
-
-A concepção do sistema reúne dois tipos de interação. Na área da
-conta, o participante realiza operações como pagamentos,
-transferências e compras. Na área de gerência, é possível configurar
-a agência, acompanhar suas contas e executar ciclos de processamento.
-Entre as operações realizadas em um ciclo está o crédito de salário
-fictício, associado à profissão atribuída no momento da abertura da
-conta.
+A agência é a unidade de organização do EDBank. A ela se vinculam
+as contas dos participantes, os responsáveis pela gerência e os
+ciclos de processamento. Essa estrutura permite reunir, em um
+mesmo ambiente, as operações individuais de cada conta e ações
+que alcançam um conjunto de participantes, como o crédito de
+salários fictícios \cite{bravin2026edbank}.
 
 \section{Público-alvo e Contexto de Uso}
 \label{cap-cencepcao-publico}
 
-O EDBank destina-se a estudantes do Ensino Médio em atividades de
-matemática financeira. Em uma atividade orientada pelo professor,
-o estudante pode prever o saldo após uma sequência de operações,
-conferir o resultado no extrato e explicar como os pagamentos, os
-créditos e as transferências afetaram o valor disponível.
+O público-alvo é formado por estudantes do Ensino Médio em
+atividades de matemática financeira orientadas pelo professor.
+Em um possível cenário de uso, o professor assume a gerência de
+uma agência e os estudantes operam as contas vinculadas a ela.
+O sistema também prevê subgerência por convite e acesso
+administrativo.
 
-A aplicação oferece uma área de conta para os participantes e uma
-área de gerência para administrar agências. Também há previsão de
-subgerência por convite e uma área administrativa do sistema.
-Em um possível cenário de uso em sala de aula, o professor pode
-utilizar a gerência de uma agência para organizar a atividade e
-acompanhar as contas vinculadas a ela. A agência é a unidade de
-organização adotada pela aplicação.
+Uma atividade pode começar com o crédito de salário de um ciclo.
+A partir desse valor, cada estudante distribui seus recursos entre
+despesas, compras e aplicações. Ao final, o extrato serve de base
+para explicar as escolhas realizadas e comparar o saldo previsto
+com o saldo registrado.
 
 \section{Escopo da aplicação}
 \label{cap-concepcao-escopo}
@@ -46,10 +38,8 @@ participante no acesso ao sistema.
 
 O módulo de empréstimos tem caráter demonstrativo. O cálculo está
 previsto na interface, e a ação de solicitação exibe um protocolo
-no navegador. Na versão analisada, essa ação não gera contrato,
-registro de parcelas ou crédito em conta. A interface também inclui
-recursos relacionados ao Pix, mas o fluxo de envio está incompleto
-na versão analisada.
+no navegador. Na versão atual, essa ação não gera contrato,
+registro de parcelas ou crédito em conta.
 
 
 \section{Requisitos funcionais}
@@ -80,7 +70,7 @@ identificados no código da aplicação.
 
 RF01 & Autenticação & Permitir o acesso do participante por meio de uma conta Google. \\
 \hline
-RF02 & Abertura de conta & Permitir que o participante abra uma conta fictícia em uma agência, mediante código de acesso quando exigido, e associe a conta a uma profissão sorteada. \\
+RF02 & Abertura de conta & Permitir a abertura de uma conta por participante em cada agência, conferir o código de acesso quando exigido e atribuir à conta uma profissão sorteada pelo sistema. \\
 \hline
 RF03 & Consulta de saldo e extrato & Apresentar o saldo da conta e o histórico de movimentações simuladas. \\
 \hline
@@ -94,7 +84,7 @@ RF07 & Investimentos & Permitir a aplicação e a retirada de valores fictícios
 \hline
 RF08 & Compras no shopping & Permitir a consulta de produtos e a realização de compras fictícias com saldo ou cartão. \\
 \hline
-RF09 & Simulação de empréstimo & Permitir a estimativa de prestações a partir do valor solicitado e do prazo. O módulo possui interface e rotina de cálculo no navegador, cujo funcionamento precisa ser verificado em execução. \\
+RF09 & Simulação de empréstimo & Estimar o valor das prestações com base no valor financiado, na taxa mensal e no prazo informado. \\
 \hline
 RF10 & Gerência de agência & Permitir a configuração da agência, a administração das contas vinculadas e o processamento de ciclos, incluindo o crédito de salário fictício. \\
 \hline
@@ -104,7 +94,7 @@ RF10 & Gerência de agência & Permitir a configuração da agência, a administ
 \section{Requisitos não funcionais}
 \label{cap-concepcao-requisitos-nao-funcionais}
 
-Aqui, os requisitos descrevem condições esperadas do sistema. O capítulo de verificação pode mostrar quais foram atendidas.
+Os requisitos não funcionais estabelecem critérios para o controle de acesso, a consistência dos registros e a apresentação das informações financeiras. Esses critérios orientam a definição dos cenários de verificação da aplicação.
 
 \renewcommand{\arraystretch}{1.4}
 

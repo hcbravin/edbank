@@ -1,14 +1,29 @@
 \section{Contextualização e justificativa}
 \label{sec-introducao-contextualizacao}
 
-%Operações como pagamentos, transferências e contratações de crédito fazem parte de um cotidiano em que decisões financeiras são cada vez mais mediadas por aplicativos. Compreender essas operações envolve interpretar informações como saldo disponível, taxa de juros, prazo e valor total a pagar. A literatura sobre educação financeira discute a relação entre o conhecimento desses conceitos e a tomada de decisões econômicas \cite{lusardi2014}.
+Pagamentos, compras parceladas e operações de crédito exigem a
+interpretação de informações como saldo disponível, taxa de juros,
+prazo e valor total a pagar. Ao investigar a alfabetização
+financeira, Potrich, Vieira e Kirch consideram três dimensões:
+conhecimento, atitude e comportamento financeiros
+\cite{potrich2015}. No contexto escolar, uma situação de compra
+permite articular o cálculo à decisão que ele informa. Saber
+determinar o valor de uma prestação, por exemplo, é parte da
+análise necessária para decidir se a compra cabe no orçamento.
 
-Operações como pagamentos, transferências e contratações de crédito envolvem decisões que exigem a interpretação de informações como saldo disponível, taxa de juros, prazo e valor total a pagar. A alfabetização financeira é relevante para essas decisões e abrange três dimensões: o conhecimento, as atitudes e os comportamentos financeiros \cite{potrich2015}.
+Neste trabalho, apresenta-se o EDBank, um simulador bancário
+desenvolvido para apoiar atividades de matemática financeira no
+Ensino Médio. O participante utiliza uma conta fictícia vinculada
+a uma agência, na qual pode receber um salário simulado, pagar
+cobranças e realizar compras. Como essas operações afetam a mesma
+conta, uma escolha feita durante a atividade modifica os recursos
+disponíveis para a decisão seguinte.
 
-
-No Ensino Médio, situações que envolvem pagamentos e empréstimos permitem relacionar os conteúdos de matemática financeira a decisões concretas. Em uma simulação de crédito, por exemplo, o estudante pode manter o valor solicitado e variar o prazo para observar como essa alteração afeta o total a pagar. Em uma transferência, pode acompanhar o efeito da operação sobre o saldo e conferir seu registro no extrato.
-
-Neste contexto, este trabalho propõe o desenvolvimento de uma aplicação web full stack que simula operações bancárias para apoiar o ensino de matemática financeira no Ensino Médio. A proposta reúne, em um mesmo ambiente, a movimentação de valores fictícios e a comparação de cenários de crédito. Dessa forma, o estudante pode acompanhar as consequências de suas escolhas ao longo de uma atividade orientada.
+O trabalho descreve como esse ambiente foi especificado e
+implementado. O desenvolvimento compreende a definição das regras
+das operações, a organização dos dados e a integração entre
+interface e servidor. A finalidade educacional orienta a escolha
+das situações representadas pelo simulador.
 
 \section{Objetivo geral}
 \label{sec-introducao-objetivo-geral}
@@ -20,15 +35,11 @@ Desenvolver uma aplicação web full stack que simule operações bancárias fic
 \label{sec-introducao-objetivo-especifico}
 
 \begin{itemize}
-    \item Especificar os requisitos funcionais e as regras de negócio
-    das operações previstas para o simulador.
+    \item Especificar os requisitos funcionais e as regras de negócio das operações previstas para o simulador.
 
-    \item Projetar a arquitetura da aplicação e modelar os dados
-    necessários ao registro de contas e movimentações fictícias.
+    \item Projetar a arquitetura da aplicação e modelar os dados necessários ao registro de contas e movimentações fictícias.
 
-    \item Implementar um ambiente bancário fictício para abertura de contas, consulta de saldo e extrato, pagamentos, transferências e outras operações simuladas previstas no escopo da aplicação.
+    \item Implementar os fluxos de abertura de conta, consulta de saldo e extrato, pagamentos, transferências e compras parceladas no ambiente simulado.
 
-    \item Verificar o funcionamento das operações implementadas por
-    meio de cenários de teste que contemplem cálculos financeiros,
-    atualização de saldos e tratamento de operações inválidas.
+    \item Verificar o funcionamento das operações implementadas por meio de cenários de teste que contemplem cálculos financeiros, atualização de saldos e tratamento de operações inválidas.
 \end{itemize}
