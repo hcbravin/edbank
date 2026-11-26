@@ -1,4 +1,4 @@
-\section{Arquitetura da aplicação}
+\section{Arquitetura da aplicação} % 5.1
 \label{cap-desenvolvimento-arquitetura}
 
 O EDBank adota uma arquitetura cliente-servidor. O navegador
@@ -23,17 +23,14 @@ e outros elementos do simulador. A aplicação também disponibiliza,
 por meio do arquivo \texttt{api.php}, rotas que retornam dados em
 formato JSON para consultas realizadas pela interface.
 
-O fluxo de transferência exemplifica a comunicação entre esses
-componentes. Após o participante informar a agência e a conta
-de destino, o navegador consulta a API para localizar o
-destinatário e exibir sua identificação. Ao confirmar a operação,
-o formulário é enviado ao servidor, que encaminha o processamento
-à rotina de transferência. Essa rotina atualiza os saldos e
-registra a operação no banco de dados. Na consulta ao extrato,
-o sistema recupera o registro da transferência para compor o
-histórico apresentado ao participante.
+A identificação do destinatário de uma transferência ilustra esse
+fluxo. Ao receber a agência e o número da conta, o navegador
+consulta uma rota da API. O servidor localiza a conta e devolve
+os dados utilizados para exibir o nome do destinatário. Depois
+da conferência pelo participante, uma segunda requisição encaminha
+o formulário ao controlador responsável pela transferência.
 
-\section{Tecnologias utilizadas e justificativas}
+\section{Tecnologias utilizadas e justificativas} % 5.2
 \label{cap-desenvolvimento-tecnologias}
 
 O EDBank utiliza PHP tanto para gerar as páginas apresentadas ao
@@ -55,17 +52,14 @@ O código PHP acessa o banco por meio da extensão \texttt{mysqli},
 que oferece recursos para executar consultas e controlar transações
 \cite{phpMysqli}.
 
-Na interface, as páginas HTML geradas pelo PHP utilizam folhas de
-estilo e componentes do Bootstrap para organizar os formulários,
-os controles e as telas de consulta. O JavaScript trata as ações
-que exigem uma resposta durante o preenchimento da página. Um
-exemplo é a identificação do destinatário de uma transferência.
-Após o preenchimento da agência e do número da conta, a interface
-consulta o servidor e apresenta o nome localizado para conferência
-antes da confirmação do envio. O projeto emprega a biblioteca
-jQuery nesse tipo de interação. Seu suporte a requisições
-assíncronas permite atualizar parte da página a partir da resposta
-do servidor \cite{jqueryAjax}.
+Na interface, as páginas HTML utilizam folhas de estilo e
+componentes do Bootstrap para organizar formulários, controles e
+áreas de consulta. O JavaScript trata interações durante o
+preenchimento dos campos, como a formatação de valores monetários.
+Para consultas que dependem de dados do servidor, o projeto emprega
+requisições assíncronas com jQuery. Esse recurso permite incorporar
+a resposta à página já aberta e preservar os demais dados
+preenchidos no formulário \cite{jqueryAjax}.
 
 Para o acesso com uma conta Google, o EDBank utiliza a biblioteca
 Hybridauth, voltada à integração de aplicações PHP com provedores
@@ -86,32 +80,130 @@ isso permite recuperar o mesmo conjunto de bibliotecas PHP ao
 preparar outro ambiente de desenvolvimento, inclusive a biblioteca
 utilizada no acesso com Google.
 
-\section{Modelagem do banco de dados}
+\section{Modelagem do banco de dados} % 5.3
 \label{cap-desenvolvimento-banco-dados}
 
-\section{Implementação do back-end}
+O esquema do EDBank reúne 19 tabelas. A agência organiza o ambiente
+da simulação, enquanto a conta vincula cada participante às operações
+que realiza. A partir da conta, é possível identificar o titular,
+recuperar lançamentos, consultar transferências enviadas e recebidas
+e localizar registros de cartões, compras e investimentos.
+
+\subsection{Agências, participantes e contas}
+
+A tabela \texttt{agencia} identifica cada agência pela chave primária
+\texttt{ag\_id}. O campo \texttt{ag\_user} referencia o cadastro do
+usuário responsável na tabela \texttt{user}. A participação de outros
+usuários na gerência é registrada em \texttt{agencia\_gerentes},
+que associa cada usuário a uma agência e mantém o estado desse
+vínculo. A tabela \texttt{agencia\_config}, por sua vez, armazena o
+número do ciclo, a data associada a ele e os parâmetros de
+configuração da agência.
+
+Na tabela \texttt{contas}, a chave primária \texttt{ct\_id}
+identifica internamente a conta. O número apresentado ao
+participante e o dígito são armazenados em \texttt{ct\_conta} e
+\texttt{ct\_digito}. Três chaves estrangeiras obrigatórias associam
+cada conta a uma agência, a um titular e a uma profissão.
+Essa organização permite que um participante utilize contas em
+agências distintas e que a profissão seja atribuída no contexto de
+cada abertura. A regra de uma conta por participante em cada
+agência é verificada pela aplicação \cite{bravin2026edbank}.
+No esquema exportado, há índices individuais para agência e
+titular, mas o par formado por esses campos não possui uma
+restrição de unicidade.
+
+\subsection{Saldo, lançamentos e transferências}
+
+O saldo corrente fica armazenado na coluna \texttt{ct\_saldo},
+definida como \texttt{FLOAT NOT NULL DEFAULT 0}. Como a rotina de
+abertura insere a conta sem informar essa coluna, o banco atribui
+o saldo inicial de \mbox{R\$~0,00}. Os lançamentos são registrados
+na tabela \texttt{extrato}. Cada lançamento pertence a uma conta,
+identificada por \texttt{ext\_conta}, e contém uma descrição,
+um valor e uma data de registro.
+
+A tabela \texttt{transferencias} representa uma movimentação que
+envolve duas contas. Os campos \texttt{tr\_origem} e
+\texttt{tr\_destino} são chaves estrangeiras que referenciam
+\texttt{contas.ct\_id}. Cada transferência possui um único valor,
+armazenado em \texttt{tr\_valor}. Sua interpretação depende da
+conta consultada: para a origem, representa uma saída de recursos;
+para o destino, uma entrada. Ao montar o extrato exibido ao
+participante, a aplicação reúne os lançamentos de sua conta e as
+transferências em que ela aparece em um desses dois papéis
+\cite{bravin2026edbank}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figuras/fig.5.3.1.png}
+	\caption{Relacionamentos entre agência, titular, profissão, conta e movimentações no EDBank.
+Fonte: Elaboração própria a partir do esquema SQL do EDBank.}
+	\label{fig:5.3.1}
+\end{figure}
+
+O esquema emprega tipos numéricos distintos para valores que
+participam da mesma movimentação. O saldo da conta utiliza
+\texttt{FLOAT}, enquanto os valores dos lançamentos e das
+transferências utilizam \texttt{DECIMAL(10,2)}. Essa diferença
+orienta um dos critérios de verificação do simulador: após uma
+sequência de operações com centavos, o saldo apresentado deve
+corresponder ao saldo inicial acrescido das entradas e deduzido
+das saídas.
+
+\subsection{Cartões, compras, investimentos e crédito}
+
+Uma conta pode possuir vários cartões, vinculados por
+\texttt{cartoes.card\_conta}. Cada cartão possui campos próprios
+para o limite total e o limite disponível. As faturas são
+registradas em \texttt{cartoes\_fatura}, cujo campo
+\texttt{ctf\_cartao} identifica o cartão correspondente.
+Os valores da fatura e do pagamento são armazenados em colunas
+decimais com duas casas. Os detalhes da fatura são mantidos em
+um campo textual com validação de conteúdo JSON.
+
+As compras são organizadas em dois níveis. A tabela
+\texttt{agencia\_shop} vincula os itens do shopping à agência,
+e a tabela \texttt{contas\_shop} vincula os registros de compra
+à conta do participante. Em ambas, os dados do item são armazenados
+em campos textuais com validação de JSON. No esquema exportado,
+a compra referencia diretamente a conta e guarda os dados do item
+em seu próprio registro.
+
+Na tabela \texttt{investimentos}, cada aplicação pertence a uma
+conta e possui campos para o capital, o saldo, a taxa, o tipo e
+o período. O armazenamento separado de capital e saldo permite
+consultar tanto o valor registrado como capital quanto o saldo
+da aplicação. Para o crédito, a tabela \texttt{emprestimos}
+prevê o registro da conta, do valor, da taxa, do prazo em meses
+e do estado da operação. Na versão do código analisada, a ação
+de solicitação disponível na tela de empréstimos exibe um
+protocolo no navegador, sem que tenha sido identificada uma
+gravação nessa tabela \cite{bravin2026edbank}.
+
+\section{Implementação do back-end} % 5.4
 \label{cap-desenvolvimento-backend}
 
-\subsection{Rotas da API e validação das operações}
+\subsection{Rotas da API e validação das operações} % 5.5
 \label{cap-desenvolvimento-rotas-api}
 
-\subsection{Registro das movimentações e atualização do saldo}
+\subsection{Registro das movimentações e atualização do saldo} % 5.6
 \label{cap-desenvolvimento-movimentacoes-saldo}
 
-\subsection{Implementação dos cálculos financeiros}
+\subsection{Cálculo de acréscimos nas compras e nos pagamentos} % 5.7
 \label{cap-desenvolvimento-calculos-financeiros}
 
-\section{Implementação do front-end}
+\section{Implementação do front-end} % 5.8
 \label{cap-desenvolvimento-frontend}
 
-\subsection{Painel da conta e consulta ao extrato}
+\subsection{Painel da conta e consulta ao extrato} % 5.9
 \label{cap-desenvolvimento-painel-conta}
 
-\subsection{Telas de pagamento e transferência}
+\subsection{Telas de pagamento e transferência} % 5.10
 \label{cap-desenvolvimento-telas-pagamento}
 
-\subsection{Tela de simulação de crédito}
+\subsection{Tela de simulação de crédito} % 5.11
 \label{cap-desenvolvimento-tela-credito}
 
-\section{Repositório e instruções de execução}
+\section{Repositório e instruções de execução} % 5.12
 \label{cap-desenvolvimento-repositorio}

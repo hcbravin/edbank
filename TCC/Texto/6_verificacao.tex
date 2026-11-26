@@ -1,8 +1,92 @@
 \section{Cenários e procedimentos de teste}
 \label{cap-verificacao-cenarios-testes}
 
+A verificação do EDBank foi organizada por cenários de uso. Para
+cada cenário, definiu-se uma operação e um critério de verificação
+que permite comparar o comportamento esperado com o observado na
+interface. As capturas de tela documentam as etapas registradas
+durante a execução.
+
+Para a realização dos testes, foram criadas duas contas fictícias
+no EDBank. Ao longo deste capítulo, a denominação \textbf{Conta 1}
+corresponde à conta nº~34082, cadastrada em nome de Henrique Bravin,
+e a denominação \textbf{Conta 2} corresponde à conta nº~34081,
+cadastrada em nome de Henrique Casagrande. Esses identificadores
+são utilizados na descrição dos testes e nas legendas das figuras.
+
+\paragraph{CT01 --- Transferência entre duas contas.}
+O objetivo deste cenário foi verificar como uma transferência
+afeta as duas contas envolvidas. Para isso, foram utilizadas duas
+contas fictícias do EDBank. Na interface da conta de origem,
+foram informados os dados da conta de destino e o valor a
+transferir. A operação foi confirmada e documentada por meio
+de capturas de tela.
+
+O resultado esperado era que o saldo da conta de origem diminuísse
+no valor transferido e que o saldo da conta de destino aumentasse
+nesse mesmo valor. Para o extrato, o critério de verificação era
+que a operação pudesse ser identificada como saída na origem e
+como entrada no destino. A conferência dos registros é apresentada
+na Seção~\ref{cap-verificacao-movimentacoes-saldos-extrato}.
+
 \section{Verificação das movimentações, dos saldos e do extrato}
 \label{cap-verificacao-movimentacoes-saldos-extrato}
+
+\paragraph{CT01 --- Transferência da Conta 2 para a Conta 1.}
+Em 26 de novembro de 2026, foi realizada uma transferência de
+\mbox{R\$~200,00} entre duas contas da agência 00006. Antes da
+operação, a tela da gerência indicava saldo de \mbox{R\$~1.000,00}
+na Conta 2, utilizada como origem, e de \mbox{R\$~0,00} na Conta 1,
+utilizada como destino. Após a confirmação, os saldos exibidos
+passaram a \mbox{R\$~800,00} e \mbox{R\$~200,00}, respectivamente,
+como mostra a Figura~\ref{fig:ct01-gerencia}.
+
+\begin{figure}[htbp]
+    \centering
+    \caption{Saldos das contas na gerência da agência antes e depois da transferência}
+    \label{fig:ct01-gerencia}
+
+    \textbf{(a) Antes da transferência}\par
+    \includegraphics[width=\linewidth]{figuras/Tela.Gerencia.Antes.Transferencia.png}
+
+    \medskip
+    \textbf{(b) Depois da transferência}\par
+    \includegraphics[width=\linewidth]{figuras/Tela.Gerencia.Apos.Transferencia.png}
+
+    \par\smallskip
+    {\small Fonte: capturas de tela do EDBank realizadas pelo autor.}
+\end{figure}
+
+A redução de \mbox{R\$~200,00} na Conta 1 correspondeu ao aumento
+de mesmo valor na Conta 2. A soma dos dois saldos permaneceu em
+\mbox{R\$~1.000,00}. Para conferir se essa variação também estava
+identificada no histórico de cada participante, foram consultados
+os dois extratos apresentados na Figura~\ref{fig:ct01-extratos}.
+
+\begin{figure}[htbp]
+    \centering
+    \caption{Lançamentos da transferência nos extratos das contas de origem e destino}
+    \label{fig:ct01-extratos}
+
+    \textbf{(a) Conta 1: débito na origem}\par
+    \includegraphics[width=0.82\linewidth]{figuras/TCC.Extrato.Transferencia.Conta.1.png}
+
+    \medskip
+    \textbf{(b) Conta 2: crédito no destino}\par
+    \includegraphics[width=0.82\linewidth]{figuras/TCC.Extrato.Transferencia.Conta.2.png}
+
+    \par\smallskip
+    {\small Fonte: capturas de tela do EDBank realizadas pelo autor.}
+\end{figure}
+
+No extrato da Conta 1, o depósito anterior de \mbox{R\$~1.000,00}
+pela agência e o débito de \mbox{R\$~200,00} pela transferência
+explicam o saldo final de \mbox{R\$~800,00}. No extrato da Conta 2,
+o recebimento aparece como crédito de \mbox{R\$~200,00}, com
+identificação do remetente. Os dois lançamentos apresentam a mesma
+data e o mesmo valor. Para a operação testada, os saldos exibidos
+na gerência e os registros apresentados aos participantes
+corresponderam ao resultado esperado.
 
 \section{Verificação dos cálculos financeiros}
 \label{cap-verificacao-calculos-financeiros}

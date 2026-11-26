@@ -5,7 +5,8 @@ mesmo ambiente, as operações individuais de cada conta e ações
 que alcançam um conjunto de participantes, como o crédito de
 salários fictícios \cite{bravin2026edbank}.
 
-\section{Público-alvo e Contexto de Uso}
+% 4.1
+\section{Público-alvo e Contexto de Uso} 
 \label{cap-cencepcao-publico}
 
 O público-alvo é formado por estudantes do Ensino Médio em
@@ -21,6 +22,7 @@ despesas, compras e aplicações. Ao final, o extrato serve de base
 para explicar as escolhas realizadas e comparar o saldo previsto
 com o saldo registrado.
 
+% 4.2
 \section{Escopo da aplicação}
 \label{cap-concepcao-escopo}
 
@@ -36,12 +38,16 @@ ambiente da aplicação, sem liquidação financeira real. A
 autenticação com conta Google é utilizada para identificar o
 participante no acesso ao sistema.
 
-O módulo de empréstimos tem caráter demonstrativo. O cálculo está
-previsto na interface, e a ação de solicitação exibe um protocolo
-no navegador. Na versão atual, essa ação não gera contrato,
-registro de parcelas ou crédito em conta.
+O módulo de empréstimos possui uma interface demonstrativa para
+estimativa de prestações. O banco de dados dispõe de uma tabela
+para registrar a conta, o valor, a taxa e o prazo da operação.
+No fluxo de solicitação examinado, o botão exibe um protocolo no
+navegador, sem gravação identificada nessa tabela ou crédito do
+valor solicitado em conta. A aplicação também apresenta recursos
+de gerenciamento de chaves Pix, embora o fluxo de envio esteja
+incompleto na versão documentada \cite{bravin2026edbank}.
 
-
+% 4.3
 \section{Requisitos funcionais}
 \label{cap-concepcao-requisitos-funcionais}
 
@@ -91,6 +97,7 @@ RF10 & Gerência de agência & Permitir a configuração da agência, a administ
 
 \end{xltabular}
 
+% 4.4
 \section{Requisitos não funcionais}
 \label{cap-concepcao-requisitos-nao-funcionais}
 
@@ -126,27 +133,30 @@ RNF04 & Retorno das operações & A interface deve indicar se a operação foi c
 
 \end{xltabular}
 
+% 4.5
 \section{Regras de negócio}
 \label{cap-concepcao-regras}
 
+% 4.5.1
 \subsection{Contas, saldo e extrato}
 \label{cap-concepcao-contas}
 
-Cada participante pode abrir uma conta por agência. Quando a
-agência exige um código de acesso, o sistema confere esse código
-antes da abertura. Na criação da conta, é sorteada uma profissão,
-que serve de referência para o crédito de salário fictício
-durante os ciclos de processamento.
+\subsection{Contas, saldo e extrato}
 
-O saldo é armazenado na conta e atualizado conforme os lançamentos.
-Valores positivos representam créditos e valores negativos
-representam débitos. Para compor o extrato exibido ao participante,
-a aplicação reúne os lançamentos da conta e os registros de
-transferências. A rotina de abertura não informa um valor explícito
-para o saldo inicial, cuja definição depende de confirmação no
-esquema do banco de dados.
+O participante pode abrir uma conta por agência. Quando a agência
+exige um código de acesso, o sistema confere o código informado
+antes de concluir a abertura. Nesse processo, a aplicação atribui
+à conta uma profissão por sorteio. A profissão serve de referência
+para o crédito de salário fictício durante os ciclos da agência.
 
+A conta é aberta com saldo de \mbox{R\$~0,00}. A partir da abertura,
+os créditos e débitos alteram o valor disponível. Para apresentar
+o extrato, a aplicação reúne os lançamentos da conta e as
+transferências em que ela figura como origem ou destino. Assim,
+o participante pode acompanhar tanto o saldo atual quanto as
+operações que contribuíram para sua formação.
 
+% 4.5.2
 \subsection{Pagamentos e transferências simuladas}
 \label{cap-concepcao-pagamentos}
 
@@ -162,14 +172,14 @@ operação é debitado da conta de origem e creditado na conta de
 destino. O registro da transferência é utilizado na composição
 do extrato das contas envolvidas.
 
-A disponibilidade de saldo na origem é uma condição esperada para
-a transferência. Na versão analisada, a interface considera o saldo
-exibido, mas a validação no servidor não assegura a recusa da
-operação em todos os casos de saldo insuficiente. A versão analisada
-também confirma a atualização dos saldos antes de registrar a
-transferência, o que exige verificar a consistência entre o saldo
-e o histórico em caso de falha no registro.
+A regra prevista para a transferência exige saldo suficiente na
+conta de origem. Na versão documentada, a interface compara o valor
+informado com o saldo exibido. A leitura da rotina do servidor
+indica que a recusa por insuficiência de saldo não está assegurada
+em todos os casos \cite{bravin2026edbank}. Essa condição integra
+os cenários previstos para verificação.
 
+% 4.5.3
 \subsection{Simulação de crédito}
 \label{cap-concepcao-credito}
 
@@ -178,21 +188,26 @@ entradas para apresentar uma estimativa financeira. A rotina de
 cálculo considera uma taxa mensal de juros e prevê o acréscimo de
 encargos, de acordo com as opções da simulação.
 
-A prestação de referência é calculada pela fórmula de prestações
-constantes do sistema Price. A tabela de amortização da versão
-analisada, por sua vez, utiliza amortização constante. Como esses
-procedimentos representam modelos diferentes, a prestação exibida
-e a tabela não descrevem o mesmo plano de pagamento. A confirmação
-da solicitação exibe um protocolo na interface, sem efetivar a
-contratação de um empréstimo.
+A rotina de cálculo da prestação emprega o modelo de prestações
+constantes do sistema Price. A rotina que monta a tabela adota
+amortização constante, distribuindo o principal em partes iguais
+ao longo do prazo. Os dois procedimentos produzem cronogramas
+distintos. Por isso, a correspondência entre a prestação de
+referência e os valores da tabela constitui um ponto de
+verificação da versão documentada \cite{bravin2026edbank}.
 
+% 4.5.4
 \subsection{Compras parceladas no shopping}
 \label{cap-concepcao-shopping}
 
 O shopping permite realizar compras fictícias com saldo ou cartão.
 No parcelamento, compras em até três prestações são calculadas sem
 acréscimo. Acima desse limite, a aplicação calcula um acréscimo
-linear de 5\% do preço-base por parcela escolhida. Assim, uma compra
-de \mbox{R\$~1.000,00} em quatro parcelas resulta em um total
-calculado de \mbox{R\$~1.200,00}. Esse exemplo ilustra a regra
-identificada no código.
+linear de 5\% do preço-base por parcela escolhida.
+
+Por exemplo, para um produto de \mbox{R\$~1.000,00}, a escolha de
+quatro parcelas gera um acréscimo total de \(4 \times 5\% = 20\%\).
+O valor da compra passa a \mbox{R\$~1.200,00}, distribuído em
+quatro prestações de \mbox{R\$~300,00}. O exemplo foi calculado
+a partir da regra do shopping descrita no código
+\cite{bravin2026edbank}.
