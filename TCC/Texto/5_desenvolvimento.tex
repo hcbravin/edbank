@@ -1,8 +1,90 @@
 \section{Arquitetura da aplicação}
 \label{cap-desenvolvimento-arquitetura}
 
+O EDBank adota uma arquitetura cliente-servidor. O navegador
+apresenta as páginas da aplicação e executa rotinas em JavaScript,
+como a formatação de campos, a atualização de elementos da
+interface e o envio de consultas assíncronas. O servidor utiliza
+PHP para processar as requisições e gerar as páginas HTML.
+Os registros da aplicação são armazenados em um banco de dados
+MySQL, acessado pelo código PHP por meio da extensão
+\texttt{mysqli}. A descrição da arquitetura e dos fluxos de implementação apresentada
+neste capítulo toma como referência a versão do EDBank identificada
+pelo \textit{commit} \texttt{4ed0e9d} no repositório do projeto
+\cite{bravin2026edbank}.
+
+O arquivo \texttt{index.php}, localizado no diretório
+\texttt{public\_html}, é o ponto de entrada das páginas da
+aplicação. Conforme a rota solicitada, a requisição é encaminhada
+ao controlador responsável. As páginas e os formulários são
+organizados em arquivos de apresentação, enquanto as classes
+do sistema concentram operações relacionadas a contas, agências
+e outros elementos do simulador. A aplicação também disponibiliza,
+por meio do arquivo \texttt{api.php}, rotas que retornam dados em
+formato JSON para consultas realizadas pela interface.
+
+O fluxo de transferência exemplifica a comunicação entre esses
+componentes. Após o participante informar a agência e a conta
+de destino, o navegador consulta a API para localizar o
+destinatário e exibir sua identificação. Ao confirmar a operação,
+o formulário é enviado ao servidor, que encaminha o processamento
+à rotina de transferência. Essa rotina atualiza os saldos e
+registra a operação no banco de dados. Na consulta ao extrato,
+o sistema recupera o registro da transferência para compor o
+histórico apresentado ao participante.
+
 \section{Tecnologias utilizadas e justificativas}
 \label{cap-desenvolvimento-tecnologias}
+
+O EDBank utiliza PHP tanto para gerar as páginas apresentadas ao
+participante quanto para processar as operações realizadas durante
+uma sessão. Na abertura de conta, por exemplo, a página apresenta
+as agências disponíveis e recebe a escolha do usuário. Ao receber
+o formulário, o servidor verifica o código de acesso quando exigido
+pela agência e encaminha a solicitação à rotina de criação da conta.
+Essa organização permite que as regras de abertura sejam aplicadas
+no servidor e que o formulário concentre os elementos com os quais
+o participante interage.
+
+O MySQL armazena os dados das agências, das contas e de suas
+movimentações. A composição do extrato ilustra como esses registros
+se relacionam. Para apresentar o histórico de uma conta, a aplicação
+reúne os lançamentos de crédito e débito e as transferências em que
+a conta figura como origem ou destino \cite{bravin2026edbank}.
+O código PHP acessa o banco por meio da extensão \texttt{mysqli},
+que oferece recursos para executar consultas e controlar transações
+\cite{phpMysqli}.
+
+Na interface, as páginas HTML geradas pelo PHP utilizam folhas de
+estilo e componentes do Bootstrap para organizar os formulários,
+os controles e as telas de consulta. O JavaScript trata as ações
+que exigem uma resposta durante o preenchimento da página. Um
+exemplo é a identificação do destinatário de uma transferência.
+Após o preenchimento da agência e do número da conta, a interface
+consulta o servidor e apresenta o nome localizado para conferência
+antes da confirmação do envio. O projeto emprega a biblioteca
+jQuery nesse tipo de interação. Seu suporte a requisições
+assíncronas permite atualizar parte da página a partir da resposta
+do servidor \cite{jqueryAjax}.
+
+Para o acesso com uma conta Google, o EDBank utiliza a biblioteca
+Hybridauth, voltada à integração de aplicações PHP com provedores
+externos de identidade \cite{hybridauth}. Após o retorno do provedor,
+a aplicação procura o cadastro correspondente, cria um registro
+quando necessário e carrega na sessão as informações de contas e
+gerências vinculadas ao usuário. Essa divisão atende a duas
+necessidades do simulador. O provedor identifica quem está
+acessando a aplicação, e o EDBank utiliza seus próprios registros
+para determinar quais contas e agências essa pessoa pode acessar.
+
+O Composer gerencia as dependências PHP do projeto. O arquivo
+\texttt{composer.json} declara os pacotes e as restrições de versão,
+enquanto o \texttt{composer.lock} registra as versões resolvidas.
+Na instalação a partir desse último arquivo, o Composer utiliza
+as versões nele registradas \cite{composerUso}. Para o EDBank,
+isso permite recuperar o mesmo conjunto de bibliotecas PHP ao
+preparar outro ambiente de desenvolvimento, inclusive a biblioteca
+utilizada no acesso com Google.
 
 \section{Modelagem do banco de dados}
 \label{cap-desenvolvimento-banco-dados}

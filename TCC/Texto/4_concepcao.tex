@@ -62,11 +62,21 @@ identificados no código da aplicação.
 \renewcommand{\arraystretch}{1.4}
 
 \begin{xltabular}{\textwidth}{|>{\centering\arraybackslash}m{1.6cm}|>{\centering\arraybackslash}m{3.6cm}|X|}
-\caption{Requisitos Funcionais do Sistema}
-\label{tab:requisitos-funcionais}\\
+\caption{Requisitos Funcionais do Sistema}\label{tab:requisitos-funcionais}\\
 \hline
 \textbf{Código} & \textbf{Item} & \textbf{Descrição} \\
 \hline
+\endfirsthead
+\multicolumn{3}{l}{\small\itshape (continuação da Tabela \ref{tab:requisitos-funcionais})}\\
+\hline
+\textbf{Código} & \textbf{Item} & \textbf{Descrição} \\
+\hline
+\endhead
+\hline
+\multicolumn{3}{r}{\small\itshape continua na próxima página\ldots}\\
+\endfoot
+\hline
+\endlastfoot
 
 RF01 & Autenticação & Permitir o acesso do participante por meio de uma conta Google. \\
 \hline
@@ -88,6 +98,7 @@ RF09 & Simulação de empréstimo & Permitir a estimativa de prestações a part
 \hline
 RF10 & Gerência de agência & Permitir a configuração da agência, a administração das contas vinculadas e o processamento de ciclos, incluindo o crédito de salário fictício. \\
 \hline
+
 \end{xltabular}
 
 \section{Requisitos não funcionais}
