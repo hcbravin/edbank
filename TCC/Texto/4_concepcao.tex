@@ -1,22 +1,93 @@
-\section{Público-alvo e contexto de uso}
-\label{cap-concepcao-publico-alvo}
+O EDBank é uma aplicação web que simula operações bancárias para uso
+em atividades de matemática financeira no Ensino Médio. A aplicação
+organiza as contas em agências e permite aos participantes movimentar
+valores fictícios, acompanhar registros no extrato e consultar as
+consequências financeiras de suas operações.
 
-O simulador destina-se a estudantes do Ensino Médio em atividades de matemática financeira. Seu uso é previsto em situações orientadas pelo professor, que pode propor tarefas como acompanhar a movimentação de uma conta fictícia, conferir o saldo após uma sequência de operações ou comparar cenários de crédito.
+A concepção do sistema reúne dois tipos de interação. Na área da
+conta, o participante realiza operações como pagamentos,
+transferências e compras. Na área de gerência, é possível configurar
+a agência, acompanhar suas contas e executar ciclos de processamento.
+Entre as operações realizadas em um ciclo está o crédito de salário
+fictício, associado à profissão atribuída no momento da abertura da
+conta.
 
+\section{Público-alvo e Contexto de Uso}
+\label{cap-cencepcao-publico}
 
-Nessas atividades, o estudante utiliza a aplicação para executar as operações, consultar os resultados e justificar suas respostas. Os dados de cada cenário, como saldo inicial, valores de pagamento, taxas e prazos, podem ser definidos de acordo com o conteúdo trabalhado na aula.
+O EDBank destina-se a estudantes do Ensino Médio em atividades de
+matemática financeira. Em uma atividade orientada pelo professor,
+o estudante pode prever o saldo após uma sequência de operações,
+conferir o resultado no extrato e explicar como os pagamentos, os
+créditos e as transferências afetaram o valor disponível.
+
+A aplicação oferece uma área de conta para os participantes e uma
+área de gerência para administrar agências. Também há previsão de
+subgerência por convite e uma área administrativa do sistema.
+Em um possível cenário de uso em sala de aula, o professor pode
+utilizar a gerência de uma agência para organizar a atividade e
+acompanhar as contas vinculadas a ela. A agência é a unidade de
+organização adotada pela aplicação.
 
 \section{Escopo da aplicação}
 \label{cap-concepcao-escopo}
 
-O escopo da aplicação compreende a criação de contas fictícias, a consulta de saldo e extrato, o registro de pagamentos simulados, as transferências entre contas do próprio sistema e a simulação de crédito. As movimentações utilizam valores fictícios e são processadas dentro da aplicação, sem integração com instituições financeiras ou sistemas de pagamento.
+O EDBank compreende a abertura de contas fictícias em agências,
+a consulta de saldo e extrato, as transferências entre contas,
+o pagamento de cobranças, o uso de cartões, os investimentos
+simulados e as compras em um shopping interno. Na área de gerência,
+o sistema reúne funções relacionadas à configuração da agência,
+à administração das contas e ao processamento de ciclos.
 
+As movimentações utilizam valores fictícios e são processadas no
+ambiente da aplicação, sem liquidação financeira real. A
+autenticação com conta Google é utilizada para identificar o
+participante no acesso ao sistema.
 
-Na simulação de crédito, o estudante poderá informar parâmetros da operação e consultar os valores calculados para comparar cenários. Os modelos de cálculo, os parâmetros aceitos e as regras de validação serão descritos nas seções de regras de negócio e implementação da aplicação.
+O módulo de empréstimos tem caráter demonstrativo. O cálculo está
+previsto na interface, e a ação de solicitação exibe um protocolo
+no navegador. Na versão analisada, essa ação não gera contrato,
+registro de parcelas ou crédito em conta. A interface também inclui
+recursos relacionados ao Pix, mas o fluxo de envio está incompleto
+na versão analisada.
 
 
 \section{Requisitos funcionais}
 \label{cap-concepcao-requisitos-funcionais}
+
+Os requisitos funcionais a seguir descrevem as ações previstas
+para os participantes e para a gerência, a partir dos fluxos
+identificados no código da aplicação.
+
+\renewcommand{\arraystretch}{1.4}
+
+\begin{xltabular}{\textwidth}{|>{\centering\arraybackslash}m{1.6cm}|>{\centering\arraybackslash}m{3.6cm}|X|}
+\caption{Requisitos Funcionais do Sistema}\label{tab:requisitos-funcionais}\\
+\hline
+\textbf{Código} & \textbf{Item} & \textbf{Descrição} \\
+\hline
+
+RF01 & Autenticação & Permitir o acesso do participante por meio de uma conta Google. \\
+\hline
+RF02 & Abertura de conta & Permitir que o participante abra uma conta fictícia em uma agência, mediante código de acesso quando exigido, e associe a conta a uma profissão sorteada. \\
+\hline
+RF03 & Consulta de saldo e extrato & Apresentar o saldo da conta e o histórico de movimentações simuladas. \\
+\hline
+RF04 & Transferência entre contas & Permitir que o participante identifique uma conta de destino e transfira para ela um valor fictício. \\
+\hline
+RF05 & Pagamento de cobranças & Permitir a consulta de cobranças pendentes e seu pagamento com saldo em conta ou cartão, conforme as condições da operação. \\
+\hline
+RF06 & Cartões e faturas & Permitir a solicitação de cartão e a consulta de limite e fatura, além do pagamento da fatura no ambiente simulado. \\
+\hline
+RF07 & Investimentos & Permitir a aplicação e a retirada de valores fictícios, com consulta aos rendimentos apresentados pela aplicação. \\
+\hline
+RF08 & Compras no shopping & Permitir a consulta de produtos e a realização de compras fictícias com saldo ou cartão. \\
+\hline
+RF09 & Simulação de empréstimo & Permitir a estimativa de prestações a partir do valor solicitado e do prazo. O módulo possui interface e rotina de cálculo no navegador, cujo funcionamento precisa ser verificado em execução. \\
+\hline
+RF10 & Gerência de agência & Permitir a configuração da agência, a administração das contas vinculadas e o processamento de ciclos, incluindo o crédito de salário fictício. \\
+\hline
+\end{xltabular}
 
 \section{Requisitos não funcionais}
 \label{cap-concepcao-requisitos-nao-funcionais}
