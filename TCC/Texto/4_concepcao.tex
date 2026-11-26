@@ -62,7 +62,8 @@ identificados no código da aplicação.
 \renewcommand{\arraystretch}{1.4}
 
 \begin{xltabular}{\textwidth}{|>{\centering\arraybackslash}m{1.6cm}|>{\centering\arraybackslash}m{3.6cm}|X|}
-\caption{Requisitos Funcionais do Sistema}\label{tab:requisitos-funcionais}\\
+\caption{Requisitos Funcionais do Sistema}
+\label{tab:requisitos-funcionais}\\
 \hline
 \textbf{Código} & \textbf{Item} & \textbf{Descrição} \\
 \hline
@@ -92,14 +93,105 @@ RF10 & Gerência de agência & Permitir a configuração da agência, a administ
 \section{Requisitos não funcionais}
 \label{cap-concepcao-requisitos-nao-funcionais}
 
+Aqui, os requisitos descrevem condições esperadas do sistema. O capítulo de verificação pode mostrar quais foram atendidas.
+
+\renewcommand{\arraystretch}{1.4}
+
+\begin{xltabular}{\textwidth}{|>{\centering\arraybackslash}m{1.6cm}|>{\centering\arraybackslash}m{3.6cm}|X|}
+\caption{Requisitos Não Funcionais do Sistema}\label{tab:requisitos-nao-funcionais}\\
+\hline
+\textbf{Código} & \textbf{Item} & \textbf{Descrição} \\
+\hline
+\endfirsthead
+\multicolumn{3}{l}{\small\itshape (continuação da Tabela \ref{tab:requisitos-nao-funcionais})}\\
+\hline
+\textbf{Código} & \textbf{Item} & \textbf{Descrição} \\
+\hline
+\endhead
+\hline
+\multicolumn{3}{r}{\small\itshape continua na próxima página\ldots}\\
+\endfoot
+\hline
+\endlastfoot
+
+RNF01 & Controle de acesso & As operações de conta e de gerência devem ser restritas a usuários autenticados e autorizados a atuar sobre a conta ou agência correspondente. \\
+\hline
+RNF02 & Consistência dos registros & O saldo e o extrato devem refletir as movimentações efetivadas. Nas transferências, o débito na origem, o crédito no destino e o registro da operação devem permanecer coerentes, inclusive em caso de falha. \\
+\hline
+RNF03 & Clareza das informações financeiras & A interface deve identificar os valores em reais e distinguir créditos de débitos. Na simulação de empréstimo, deve informar o valor solicitado, a periodicidade da taxa de juros, o prazo e os valores calculados. \\
+\hline
+RNF04 & Retorno das operações & A interface deve indicar se a operação foi concluída ou recusada e apresentar uma mensagem que permita ao usuário compreender os casos de recusa tratados pela aplicação. \\
+\hline
+
+\end{xltabular}
+
 \section{Regras de negócio}
 \label{cap-concepcao-regras}
 
 \subsection{Contas, saldo e extrato}
 \label{cap-concepcao-contas}
 
+Cada participante pode abrir uma conta por agência. Quando a
+agência exige um código de acesso, o sistema confere esse código
+antes da abertura. Na criação da conta, é sorteada uma profissão,
+que serve de referência para o crédito de salário fictício
+durante os ciclos de processamento.
+
+O saldo é armazenado na conta e atualizado conforme os lançamentos.
+Valores positivos representam créditos e valores negativos
+representam débitos. Para compor o extrato exibido ao participante,
+a aplicação reúne os lançamentos da conta e os registros de
+transferências. A rotina de abertura não informa um valor explícito
+para o saldo inicial, cuja definição depende de confirmação no
+esquema do banco de dados.
+
+
 \subsection{Pagamentos e transferências simuladas}
 \label{cap-concepcao-pagamentos}
 
+O pagamento de cobranças pode ser realizado com saldo em conta ou
+cartão. No pagamento com saldo, o processamento verifica se o valor
+disponível é suficiente para a cobrança. No pagamento com cartão,
+o sistema aplica um acréscimo de 5\% e verifica o limite disponível.
+
+Na transferência, o participante informa a agência, a conta de
+destino e o valor. A aplicação verifica se a conta de destino
+existe e recusa valores iguais ou inferiores a zero. O valor da
+operação é debitado da conta de origem e creditado na conta de
+destino. O registro da transferência é utilizado na composição
+do extrato das contas envolvidas.
+
+A disponibilidade de saldo na origem é uma condição esperada para
+a transferência. Na versão analisada, a interface considera o saldo
+exibido, mas a validação no servidor não assegura a recusa da
+operação em todos os casos de saldo insuficiente. A versão analisada
+também confirma a atualização dos saldos antes de registrar a
+transferência, o que exige verificar a consistência entre o saldo
+e o histórico em caso de falha no registro.
+
 \subsection{Simulação de crédito}
 \label{cap-concepcao-credito}
+
+A tela de empréstimos utiliza o valor solicitado e o prazo como
+entradas para apresentar uma estimativa financeira. A rotina de
+cálculo considera uma taxa mensal de juros e prevê o acréscimo de
+encargos, de acordo com as opções da simulação.
+
+A prestação de referência é calculada pela fórmula de prestações
+constantes do sistema Price. A tabela de amortização da versão
+analisada, por sua vez, utiliza amortização constante. Como esses
+procedimentos representam modelos diferentes, a prestação exibida
+e a tabela não descrevem o mesmo plano de pagamento. A confirmação
+da solicitação exibe um protocolo na interface, sem efetivar a
+contratação de um empréstimo.
+
+\subsection{Compras parceladas no shopping}
+\label{cap-concepcao-shopping}
+
+O shopping permite realizar compras fictícias com saldo ou cartão.
+No parcelamento, compras em até três prestações são calculadas sem
+acréscimo. Acima desse limite, a aplicação calcula um acréscimo
+linear de 5\% do preço-base por parcela escolhida. Assim, uma compra
+de \mbox{R\$~1.000,00} em quatro parcelas resulta em um total
+calculado de \mbox{R\$~1.200,00}. Esse exemplo ilustra a regra
+identificada no código.
